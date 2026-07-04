@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { celebrate } from "celebrate";
+
+import { storyIdSchema } from "../validations/index.js";
+import { getStoryById } from "../controllers/stories/getStoryById.js";
 
 const storiesRouter = Router();
 
-
-
-export default storiesRouter;
+storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
