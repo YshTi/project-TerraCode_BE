@@ -9,7 +9,11 @@ usersRouter.get(
   "/me/stories",
   authenticate,
   getCurrentUserStoriesValidation,
-  ctrl.getCurrentUserStories
+  ctrl.getCurrentUserStories,
 );
+
+usersRouter.patch("/me/saved/:storyId", authenticate, ctrl.addSavedStory);
+
+usersRouter.delete("/me/saved/:storyId", authenticate, ctrl.removeSavedStory);
 
 export default usersRouter;
