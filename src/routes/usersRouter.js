@@ -9,7 +9,14 @@ usersRouter.get(
   "/me/stories",
   authenticate,
   getCurrentUserStoriesValidation,
-  ctrl.getCurrentUserStories
+  ctrl.getCurrentUserStories,
+);
+
+usersRouter.get(
+  "/me/saved",
+  authenticate,
+  getCurrentUserStoriesValidation,
+  ctrl.getSavedStoriesController,
 );
 
 export default usersRouter;
