@@ -8,7 +8,7 @@ import createHttpError from "http-errors";
 export const getUserProfileController = async (req, res) => {
   const { id } = req.params;
 
-const { page = 1, perPage = 8 } = req.query;
+const { page = 1, perPage = 4 } = req.query;
 const skip = (page - 1) * perPage;
 
   const user = await UserModel.findById(id).select('-password');
