@@ -54,7 +54,7 @@ export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
 
   const [stories, total] = await Promise.all([
     StoryModel.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ date: -1 })
       .skip(skip)
       .limit(perPage)
       .populate("category")
