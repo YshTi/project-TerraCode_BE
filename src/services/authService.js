@@ -77,3 +77,14 @@ export const loginUser = async ({ email, password }) => {
     accessToken,
   };
 };
+
+export const logoutUser = async (userId) => {
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw createError(401, "Not authorized");
+  }
+
+  user.token = null;
+  await user.save();
+};
