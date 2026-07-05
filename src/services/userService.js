@@ -39,9 +39,9 @@ export const getCurrentUserStories = async ({
 };
 
 export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
-  const currentPage = Number(page);
+  const currentPage = Number(limit ?? perPage);
   const perPage = Number(limit);
-  const skip = (currentPage - 1) * perPage;
+  const skip = (currentPage - 1) * currentLimit;
 
   const user = await UserModel.findById(userId).select("savedArticles");
 
@@ -55,19 +55,19 @@ export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
     StoryModel.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(perPage)
+      .limit(currentLimit)
       .lean(),
 
     StoryModel.countDocuments(filter),
   ]);
 
-  const totalPages = Math.ceil(total / perPage);
+  const totalPages = Math.ceil(total / currentLimit);
 
   return {
     stories,
     pagination: {
       page: currentPage,
-      limit: perPage,
+      limit: currentLimit,
       total,
       totalPages,
       hasNextPage: currentPage < totalPages,
