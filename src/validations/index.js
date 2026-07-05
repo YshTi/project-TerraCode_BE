@@ -1,4 +1,5 @@
 import { celebrate, Joi, Segments } from "celebrate";
+import { isValidObjectId } from "mongoose";
 
 export const registerUserValidation = celebrate({
   [Segments.BODY]: Joi.object({
@@ -33,3 +34,25 @@ export const getCurrentUserStoriesValidation = celebrate({
     limit: Joi.number().integer().min(1).max(100).default(10),
   }),
 });
+
+
+// Валідація для objectId
+
+const objectIdValidator = (value, helpers) => {
+  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
+};
+
+export const storyIdSchema = {
+  [Segments.PARAMS]: Joi.object({
+    storyId: Joi.string().custom(objectIdValidator).required(),
+  }),
+};
+
+
+export const recommendedStoriesQuerySchema = {
+  [Segments.QUERY]: Joi.object({
+    category: Joi.string().custom(objectIdValidator).required(), 
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(50).default(10),
+  }),
+};
