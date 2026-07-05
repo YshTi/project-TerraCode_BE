@@ -57,6 +57,7 @@ export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(perPage)
+      .populate("category")
       .lean(),
 
     StoryModel.countDocuments(filter),

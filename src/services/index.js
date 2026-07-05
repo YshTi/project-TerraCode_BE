@@ -6,7 +6,10 @@ import {
   formatUser,
 } from "./authService.js";
 
-import { getCurrentUserStories } from "./userService.js";
+import {
+  getCurrentUserStories,
+  getSavedStories,
+} from "./userService.js";
 
 export const authService = {
   registerUser,
@@ -18,4 +21,5 @@ export const authService = {
 
 export const userService = {
   getCurrentUserStories,
+  getSavedStories,
 };
