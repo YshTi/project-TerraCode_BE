@@ -104,3 +104,12 @@ export const getCurrentUserStoriesValidation = celebrate({
     limit: Joi.number().integer().min(1).max(100).default(10),
   }),
 });
+
+
+export const recommendedStoriesQuerySchema = {
+  [Segments.QUERY]: Joi.object({
+    category: Joi.string().custom(objectIdValidator).required(), 
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(50).default(10),
+  }),
+};

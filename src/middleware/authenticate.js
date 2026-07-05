@@ -6,13 +6,15 @@ import { UserModel } from "../models/index.js";
 
 export const authenticate = async (req, res, next) => {
   const { authorization = "" } = req.headers;
-  const authParts = authorization.split(" ");
+  const tokenFromHeader = authorization.startsWith("Bearer ")
+    ? authorization.split(" ")[1]
+    : "";
+  const tokenFromCookie = req.cookies?.accessToken || "";
+  const token = tokenFromHeader || tokenFromCookie;
 
-  if (authParts.length !== 2 || authParts[0] !== "Bearer" || !authParts[1]) {
+  if (!token) {
     throw createError(401, "Not authorized");
   }
-
-  const token = authParts[1];
 
   let payload;
 
