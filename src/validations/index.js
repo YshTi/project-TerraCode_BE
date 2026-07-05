@@ -81,6 +81,23 @@ export const storyIdSchema = {
   }),
 };
 
+export const loginUserValidation = celebrate({
+  [Segments.BODY]: Joi.object({
+    email: Joi.string().trim().lowercase().email().required().messages({
+      "string.base": "Email must be a string",
+      "string.empty": "Email is required",
+      "string.email": "Email must be a valid email",
+      "any.required": "Email is required",
+    }),
+
+    password: Joi.string().required().messages({
+      "string.base": "Password must be a string",
+      "string.empty": "Password is required",
+      "any.required": "Password is required",
+    }),
+  }).unknown(false),
+});
+
 export const getCurrentUserStoriesValidation = celebrate({
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),

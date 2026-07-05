@@ -36,6 +36,11 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
+    //Token for password reset and email verification
+    token: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,
