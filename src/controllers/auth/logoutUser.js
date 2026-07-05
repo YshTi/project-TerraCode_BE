@@ -1,7 +1,8 @@
+import { authService } from "../../services/index.js";
+
 export const logoutUser = async (req, res, next) => {
   try {
-    req.user.token = null;
-    await req.user.save();
+    await authService.logoutUser(req.user._id);
 
     return res.sendStatus(204);
   } catch (error) {
