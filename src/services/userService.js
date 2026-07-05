@@ -1,6 +1,7 @@
 import createError from "http-errors";
-import { StoryModel, UserModel } from "../models/index.js";
 import mongoose from "mongoose";
+
+import { StoryModel, UserModel } from "../models/index.js";
 
 export const getCurrentUserStories = async ({
   userId,
@@ -43,6 +44,41 @@ export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
   const currentPage = Number(page);
   const perPage = Number(limit);
   const skip = (currentPage - 1) * perPage;
+
+  const user = await UserModel.findById(userId).select("savedArticles");
+
+  if (!user) {
+    throw createError(404, "User not found");
+  }
+
+  const filter = { _id: { $in: user.savedArticles } };
+
+  const [stories, total] = await Promise.all([
+    StoryModel.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage)
+      .populate("category")
+      .lean(),
+
+    StoryModel.countDocuments(filter),
+  ]);
+
+  const totalPages = Math.ceil(total / perPage);
+
+  return {
+    stories,
+    pagination: {
+      page: currentPage,
+      limit: perPage,
+      total,
+      totalPages,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    },
+  };
+};
+
 export const addStoryToSaved = async ({ userId, storyId }) => {
   if (!mongoose.Types.ObjectId.isValid(storyId)) {
     throw createError(400, "Invalid story id format");
@@ -84,31 +120,6 @@ export const removeStoryFromSaved = async ({ userId, storyId }) => {
     throw createError(404, "User not found");
   }
 
-  const filter = { _id: { $in: user.savedArticles } };
-
-  const [stories, total] = await Promise.all([
-    StoryModel.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(perPage)
-      .lean(),
-
-    StoryModel.countDocuments(filter),
-  ]);
-
-  const totalPages = Math.ceil(total / perPage);
-
-  return {
-    stories,
-    pagination: {
-      page: currentPage,
-      limit: perPage,
-      total,
-      totalPages,
-      hasNextPage: currentPage < totalPages,
-      hasPreviousPage: currentPage > 1,
-    },
-  };
   const isSaved = user.savedArticles.some(
     (savedStoryId) => savedStoryId.toString() === storyId,
   );
