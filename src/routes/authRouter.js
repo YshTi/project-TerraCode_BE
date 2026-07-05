@@ -6,5 +6,5 @@ import { registerUserValidation } from "../validations/index.js";
 const authRouter = Router();
 
 authRouter.post("/register", registerUserValidation, ctrl.registerUser);
-
+authRouter.post("/logout", ctrl.logoutUser);
 export default authRouter;
