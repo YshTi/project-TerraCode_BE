@@ -1,48 +1,5 @@
 /**
  * @swagger
- * /api/users/me:
- *   get:
- *     summary: Get current user
- *     description: Returns information about the currently authenticated user.
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Current user returned successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/User"
- *             example:
- *               _id: "6881563901add19ee16fd013"
- *               name: "Test User"
- *               avatarUrl: ""
- *               articlesAmount: 0
- *               savedArticles:
- *                 - "68498236a100312bea018fe6"
- *               email: "testuser@example.com"
- *               createdAt: "2026-07-05T15:18:09.263Z"
- *               updatedAt: "2026-07-05T15:18:09.263Z"
- *       401:
- *         description: Not authorized. Bearer token is missing, invalid, or expired.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *             example:
- *               message: "Not authorized"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- */
-
-/**
- * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get public user profile
@@ -156,6 +113,49 @@
 
 /**
  * @swagger
+ * /api/users/me:
+ *   get:
+ *     summary: Get current user
+ *     description: Returns information about the currently authenticated user.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/User"
+ *             example:
+ *               _id: "6881563901add19ee16fd013"
+ *               name: "Test User"
+ *               avatarUrl: ""
+ *               articlesAmount: 0
+ *               savedArticles:
+ *                 - "68498236a100312bea018fe6"
+ *               email: "testuser@example.com"
+ *               createdAt: "2026-07-05T15:18:09.263Z"
+ *               updatedAt: "2026-07-05T15:18:09.263Z"
+ *       401:
+ *         description: Not authorized. Bearer token is missing, invalid, or expired.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *             example:
+ *               message: "Not authorized"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ */
+
+/**
+ * @swagger
  * /api/users/me/stories:
  *   get:
  *     summary: Get current user's stories
@@ -243,5 +243,107 @@
  *         description: Not authorized
  *       404:
  *         description: Story not found or story is not saved
+ */
+
+/**
+ * @swagger
+ * /api/users/me/saved:
+ *   get:
+ *     summary: Get current user's saved stories
+ *     description: Returns stories saved by the authenticated user with pagination.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number. Backend validates that it must be an integer greater than or equal to 1. Default is 1.
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of saved stories per page. Backend validates that it must be an integer greater than or equal to 1. Default is 10.
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *         example: 10
+ *     responses:
+ *       200:
+ *         description: Saved stories returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 total:
+ *                   type: integer
+ *                   example: 2
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 stories:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/Story"
+ *             example:
+ *               page: 1
+ *               limit: 10
+ *               total: 2
+ *               totalPages: 1
+ *               stories:
+ *                 - _id: "68498236a100312bea018fe6"
+ *                   img: "https://ftp.goit.study/img/green-tourism/68498236a100312bea018fe6.webp"
+ *                   title: "Test story title"
+ *                   article: "Test story article text."
+ *                   category: "6966a5cdbc1b90f344c2e0bb"
+ *                   rate: 14
+ *                   ownerId: "6881563901add19ee16fd011"
+ *                   date: "2025-09-20"
+ *                 - _id: "68498236a100312bea045fe6"
+ *                   img: "https://ftp.goit.study/img/green-tourism/68498236a100312bea045fe6.webp"
+ *                   title: "Another test story title"
+ *                   article: "Another test story article text."
+ *                   category: "6966a5cdbc1b90f344c2e0be"
+ *                   rate: 10
+ *                   ownerId: "6881563901add19ee16fd013"
+ *                   date: "2025-09-21"
+ *       400:
+ *         description: Validation error for query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ValidationErrorResponse"
+ *             example:
+ *               message: "Validation failed"
+ *               errors:
+ *                 page:
+ *                   - "Page must be greater than or equal to 1"
+ *       401:
+ *         description: Not authorized. Bearer token is missing, invalid, or expired.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *             example:
+ *               message: "Not authorized"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  */
 export {};
