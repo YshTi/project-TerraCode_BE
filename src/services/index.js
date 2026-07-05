@@ -1,11 +1,10 @@
 import { registerUser } from "./authService.js";
-
-import { getStories } from "./storyService.js";
+import { getCurrentUserStories } from "./userService.js";
 
 export const authService = {
   registerUser,
 };
 
-export const storyService = {
-  getStories,
+export const userService = {
+  getCurrentUserStories,
 };

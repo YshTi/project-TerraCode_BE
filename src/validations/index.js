@@ -27,23 +27,9 @@ export const registerUserValidation = celebrate({
   }).unknown(false),
 });
 
-export const getStoriesValidation = celebrate({
+export const getCurrentUserStoriesValidation = celebrate({
   [Segments.QUERY]: Joi.object({
-    page: Joi.number().integer().min(1).default(1).messages({
-      "number.base": "Сторінка має бути числом",
-      "number.min": "Сторінка має бути не менше 1",
-    }),
-    limit: Joi.number().integer().min(1).max(100).default(10).messages({
-      "number.base": "Ліміт має бути числом",
-      "number.min": "Ліміт має бути не менше 1",
-      "number.max": "Ліміт має бути не більше 100",
-    }),
-    category: Joi.string().hex().length(24).messages({
-      "string.hex": "Некоректний ідентифікатор категорії",
-      "string.length": "Некоректний ідентифікатор категорії",
-    }),
-    type: Joi.string().valid("popular").messages({
-      "any.only": "Параметр type може мати лише значення 'popular'",
-    }),
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(10),
   }),
 });
