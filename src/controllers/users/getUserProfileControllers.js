@@ -1,6 +1,6 @@
 
-import { UserModel } from "../../models/user";
-import { StoryModel } from '../../models/story';
+import { UserModel } from "../../models/user.js";
+import { StoryModel } from '../../models/story.js';
 import createHttpError from "http-errors";
 
 
