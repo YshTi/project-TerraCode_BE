@@ -8,12 +8,17 @@ import {
 
 const authRouter = Router();
 
-authRouter.post("/register", registerUserValidation, ctrl.registerUser);
-authRouter.post("/login", loginUserValidation, ctrl.loginUser);
 authRouter.post(
   "/register",
   registerUserValidation,
   ctrl.registerUser,
+  validationErrorHandler,
+);
+
+authRouter.post(
+  "/login",
+  loginUserValidation,
+  ctrl.loginUser,
   validationErrorHandler,
 );
 
