@@ -1,5 +1,61 @@
 /**
  * @swagger
+ * /api/stories/{storyId}:
+ *   get:
+ *     summary: Get story by id
+ *     description: Returns detailed information about one story.
+ *     tags:
+ *       - Stories
+ *     parameters:
+ *       - in: path
+ *         name: storyId
+ *         required: true
+ *         description: Story MongoDB ObjectId. Backend validates that it must be a valid 24-character ObjectId. Use abc to test invalid id response.
+ *         schema:
+ *           type: string
+ *         example: "68498236a100312bea018fe6"
+ *     responses:
+ *       200:
+ *         description: Story returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Story"
+ *             example:
+ *               _id: "68498236a100312bea018fe6"
+ *               img: "https://ftp.goit.study/img/green-tourism/68498236a100312bea018fe6.webp"
+ *               title: "Test story title"
+ *               article: "Test story article text."
+ *               category: "6966a5cdbc1b90f344c2e0bb"
+ *               rate: 14
+ *               ownerId: "6881563901add19ee16fd011"
+ *               date: "2025-09-20"
+ *       400:
+ *         description: Invalid story id format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *             example:
+ *               message: "Invalid id format"
+ *       404:
+ *         description: Story not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *             example:
+ *               message: "Story not found"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ */
+
+/**
+ * @swagger
  * /api/stories/recommended:
  *   get:
  *     summary: Get recommended stories by category
