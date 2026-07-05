@@ -1,18 +1,7 @@
-export const logoutUser = (req, res, next) => {
+export const logoutUser = async (req, res, next) => {
   try {
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-    });
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-    });
+    req.user.token = null;
+    await req.user.save();
 
     return res.sendStatus(204);
   } catch (error) {

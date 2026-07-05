@@ -5,7 +5,7 @@ import {
   registerUserValidation,
   loginUserValidation,
 } from "../validations/index.js";
-
+import { authenticate } from "../middleware/authenticate.js";
 const authRouter = Router();
 
 authRouter.post(
@@ -22,6 +22,6 @@ authRouter.post(
   validationErrorHandler
 );
 
-authRouter.post("/logout", ctrl.logoutUser);
+authRouter.post("/logout", authenticate, ctrl.logoutUser);
 
 export default authRouter;
