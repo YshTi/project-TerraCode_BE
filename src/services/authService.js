@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
-import jwt from "jsonwebtoken";
 
 import { UserModel } from "../models/index.js";
 
