@@ -1,7 +1,7 @@
-import { registerUser, loginUser, logoutUser } from "./authService.js";
 import {
   registerUser,
   loginUser,
+  logoutUser,
   createSessionToken,
   formatUser,
 } from "./authService.js";
@@ -19,4 +19,3 @@ export const authService = {
 export const userService = {
   getCurrentUserStories,
 };
-
