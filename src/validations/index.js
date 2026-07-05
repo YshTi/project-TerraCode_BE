@@ -1,5 +1,4 @@
 import { celebrate, Joi, Segments } from "celebrate";
-
 export const registerUserValidation = celebrate({
   [Segments.BODY]: Joi.object({
     name: Joi.string().trim().max(32).required().messages({
@@ -8,7 +7,6 @@ export const registerUserValidation = celebrate({
       "string.max": "Name must be at most 32 characters",
       "any.required": "Name is required",
     }),
-
     email: Joi.string().trim().lowercase().email().max(64).required().messages({
       "string.base": "Email must be a string",
       "string.empty": "Email is required",
@@ -16,7 +14,6 @@ export const registerUserValidation = celebrate({
       "string.max": "Email must be at most 64 characters",
       "any.required": "Email is required",
     }),
-
     password: Joi.string().min(8).max(128).required().messages({
       "string.base": "Password must be a string",
       "string.empty": "Password is required",
@@ -26,7 +23,6 @@ export const registerUserValidation = celebrate({
     }),
   }).unknown(false),
 });
-
 export const getCurrentUserStoriesValidation = celebrate({
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
