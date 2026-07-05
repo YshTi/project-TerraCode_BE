@@ -39,6 +39,7 @@ export const storyIdSchema = {
     storyId: Joi.string().custom(objectIdValidator).required(),
   }),
 };
+
 export const getCurrentUserStoriesValidation = celebrate({
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
