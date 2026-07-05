@@ -7,6 +7,8 @@ import { getUserProfileController } from "../controllers/users/getUserProfileCon
 
 const usersRouter = Router();
 
+usersRouter.get("/me", authenticate, ctrl.getCurrentUser);
+
 usersRouter.get(
   "/me/stories",
   authenticate,
