@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { usersController as ctrl } from "../controllers/index.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { getCurrentUserStoriesValidation } from "../validations/index.js";
@@ -9,7 +10,7 @@ const usersRouter = Router();
 usersRouter.get(
   "/me",
   authenticate,
-  ctrl.getCurrentUser
+  ctrl.getCurrentUser,
 );
 
 usersRouter.get(
@@ -26,17 +27,16 @@ usersRouter.get(
   ctrl.getSavedStoriesController,
 );
 
-export default usersRouter;
 usersRouter.patch(
   "/me/saved/:storyId",
   authenticate,
-  ctrl.addSavedStory
+  ctrl.addSavedStory,
 );
 
 usersRouter.delete(
   "/me/saved/:storyId",
   authenticate,
-  ctrl.removeSavedStory
+  ctrl.removeSavedStory,
 );
 
 usersRouter.get("/:id", getUserProfileController);
