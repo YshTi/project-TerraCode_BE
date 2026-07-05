@@ -15,7 +15,7 @@ export const getCurrentUserStories = async ({
 
   const [stories, total] = await Promise.all([
     StoryModel.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ date: -1, _id: -1 })
       .skip(skip)
       .limit(perPage)
       .populate("category")
