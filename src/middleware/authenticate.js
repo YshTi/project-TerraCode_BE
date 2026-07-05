@@ -8,11 +8,7 @@ export const authenticate = async (req, res, next) => {
   const { authorization = "" } = req.headers;
   const authParts = authorization.split(" ");
 
-  if (
-    authParts.length !== 2 ||
-    authParts[0] !== "Bearer" ||
-    !authParts[1]
-  ) {
+  if (authParts.length !== 2 || authParts[0] !== "Bearer" || !authParts[1]) {
     throw createError(401, "Not authorized");
   }
 
@@ -32,7 +28,7 @@ export const authenticate = async (req, res, next) => {
 
   const user = await UserModel.findById(payload.id);
 
-  if (!user) {
+  if (!user || user.token !== token) {
     throw createError(401, "Not authorized");
   }
 
