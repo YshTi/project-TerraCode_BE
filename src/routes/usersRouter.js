@@ -6,6 +6,12 @@ import { getCurrentUserStoriesValidation } from "../validations/index.js";
 const usersRouter = Router();
 
 usersRouter.get(
+  "/me",
+  authenticate,
+  ctrl.getCurrentUser
+);
+
+usersRouter.get(
   "/me/stories",
   authenticate,
   getCurrentUserStoriesValidation,
