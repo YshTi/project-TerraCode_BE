@@ -6,7 +6,7 @@ import {
   registerUserValidation,
   loginUserValidation,
 } from "../validations/index.js";
-import { authenticate } from "../middleware/authenticate.js";
+
 const authRouter = Router();
 
 authRouter.post(
@@ -24,6 +24,7 @@ authRouter.post(
 );
 
 authRouter.post("/logout", authenticate, ctrl.logoutUser);
+
 authRouter.get(
   "/session",
   authenticate,
