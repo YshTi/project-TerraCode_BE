@@ -6,6 +6,23 @@ import { UserModel } from "../models/index.js";
 
 const SALT_ROUNDS = 10;
 
+export const createSessionToken = (user) => {
+  return jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+};
+
+export const formatUser = (user) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  avatarUrl: user.avatarUrl,
+  articlesAmount: user.articlesAmount,
+  savedArticles: user.savedArticles,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
 export const registerUser = async ({ name, email, password }) => {
   const normalizedEmail = email.toLowerCase();
 
@@ -23,16 +40,7 @@ export const registerUser = async ({ name, email, password }) => {
     password: hashedPassword,
   });
 
-  return {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    avatarUrl: user.avatarUrl,
-    articlesAmount: user.articlesAmount,
-    savedArticles: user.savedArticles,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  };
+  return formatUser(user);
 };
 
 export const loginUser = async ({ email, password }) => {
