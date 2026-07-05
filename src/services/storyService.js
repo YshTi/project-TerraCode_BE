@@ -1,15 +1,5 @@
+backend/16-getStories
 import { StoryModel } from "../models/index.js";
-
-// GET /api/stories
-// Public endpoint: returns a paginated list of stories.
-// Optional ?category=<categoryId> narrows the list down to one category
-// (used by the "Всі статті / Маршрути / Природа / ..." tabs on the frontend).
-// Optional ?type=popular sorts stories by rate instead of by date.
-//
-// Sorting always ends with _id as a tie-breaker: `date` alone is not
-// guaranteed to be unique across stories, and Mongo's default order for
-// ties is unstable between separate find() calls. Without the tie-breaker,
-// the same story could show up on two different pages.
 export const getStories = async ({ page = 1, limit = 10, category, type }) => {
   const currentPage = Number(page);
   const perPage = Number(limit);
@@ -51,4 +41,71 @@ export const getStories = async ({ page = 1, limit = 10, category, type }) => {
       hasPreviousPage: currentPage > 1,
     },
   };
+import { UserModel } from "../models/user.js";
+import mongoose from "mongoose";
+
+export const getRecommendedStories = async ({
+  category,
+  page = 1,
+  limit = 10,
+}) => {
+  const skip = (page - 1) * limit;
+
+  const categoryId = new mongoose.Types.ObjectId(category);
+
+  const aggregationSteps = [
+    // 1. Розгортєм масив збереженик історій користувача в окремі документи
+    { $unwind: "$savedArticles" },
+
+    // 2. Рахуємо, скільки разів кожна історія зустрічається
+    {
+      $group: {
+        _id: "$savedArticles",
+        savesCount: { $sum: 1 },
+      },
+    },
+
+    //3. Підтягумо дані самої історїій
+    {
+      $lookup: {
+        from: "stories",
+        localField: "_id",
+        foreignField: "_id",
+        as: "story",
+      },
+    },
+    { $unwind: "$story" },
+
+    // 4. Фільтруємо за категорією
+    {
+      $match: {
+        "story.category": categoryId,
+      },
+    },
+
+    // 5. Сотруємо за популярністю (спадання)
+    { $sort: { savesCount: -1 } },
+
+    // 6. Пагінація
+    { $skip: skip },
+    { $limit: Number(limit) },
+
+    // 7. Формуємо фінальний варіант відповіді
+    {
+      $project: {
+        _id: "$story._id",
+        img: "$story.img",
+        title: "$story.title",
+        article: "$story.article",
+        category: "$story.category",
+        rate: "$story.rate",
+        date: "$story.date",
+        savesCount: 1,
+      },
+    },
+  ];
+
+  const stories = await UserModel.aggregate(aggregationSteps);
+
+  return stories;
 };

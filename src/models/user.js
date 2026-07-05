@@ -36,10 +36,15 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
+    //Token for password reset and email verification
+    token: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Unique email only for users that actually have email
@@ -50,7 +55,7 @@ userSchema.index(
     partialFilterExpression: {
       email: { $type: "string" },
     },
-  }
+  },
 );
 
 export const UserModel = model("user", userSchema);
