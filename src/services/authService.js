@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import createError from "http-errors";
 
 import { UserModel } from "../models/index.js";
@@ -31,5 +32,40 @@ export const registerUser = async ({ name, email, password }) => {
     savedArticles: user.savedArticles,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+  };
+};
+
+export const loginUser = async ({ email, password }) => {
+  const normalizedEmail = email.toLowerCase();
+
+  const user = await UserModel.findOne({
+    email: normalizedEmail,
+  });
+
+  if (!user) {
+    throw createError(401, "Email or password is invalid");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw createError(401, "Email or password is invalid");
+  }
+
+  const accessToken = jwt.sign(
+    {
+      id: user._id,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h",
+    }
+  );
+
+  user.token = accessToken;
+  await user.save();
+
+  return {
+    accessToken,
   };
 };
