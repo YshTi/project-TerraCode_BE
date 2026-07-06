@@ -46,3 +46,5 @@ export const getCurrentUserStoriesValidation = celebrate({
     limit: Joi.number().integer().min(1).max(100).default(10),
   }),
 });
+
+
