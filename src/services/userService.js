@@ -2,8 +2,6 @@ import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import mongoose from "mongoose";
 import { StoryModel, UserModel } from "../models/index.js";
-
-import { StoryModel, UserModel } from "../models/index.js";
 import { sendEmailVerification } from "../utils/sendEmail.js";
 
 const EMAIL_CHANGE_SECRET =
