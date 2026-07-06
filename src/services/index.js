@@ -8,6 +8,10 @@ import {
 
 import { getCurrentUserStories } from "./userService.js";
 import { getStories } from "./storyService.js";
+import {
+  getCurrentUserStories,
+  getSavedStories,
+} from "./userService.js";
 
 export const authService = {
   registerUser,
@@ -19,6 +23,7 @@ export const authService = {
 
 export const userService = {
   getCurrentUserStories,
+  getSavedStories,
 };
 backend/16-getStories
 
