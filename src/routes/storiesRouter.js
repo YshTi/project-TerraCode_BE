@@ -25,7 +25,7 @@ storiesRouter.get("/", celebrate(storiesQuerySchema), getStories);
 
 storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
 
-storiesRouter.post("/", authenticate, createStoryValidation, usersController.createStoryController)
+storiesRouter.post("/", authenticate, createStoryValidation, usersController.createStoryController);
 
 
 
