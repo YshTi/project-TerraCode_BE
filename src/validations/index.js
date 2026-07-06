@@ -122,7 +122,7 @@ export const createStoryValidation = celebrate({
     img: Joi.string().trim().uri().required().messages({
       "string.base": "Image must be a string",
       "string.empty": "Image URL is required",
-      "string.uri": "Image must be a valid URL", // 🌟 виправлено на string.uri
+      "string.uri": "Image must be a valid URL", 
       "any.required": "Image is required",
     }),
 
@@ -141,7 +141,7 @@ export const createStoryValidation = celebrate({
       "any.required": "Article is required",
     }),
 
-    category: Joi.string().custom(objectIdValidator).required().messages({ // 🌟 виправлено на .custom
+    category: Joi.string().custom(objectIdValidator).required().messages({
       "string.base": "Category must be a string",
       "string.empty": "Category ID is required",
       "any.required": "Category ID is required",
