@@ -1,5 +1,69 @@
 /**
  * @swagger
+ * /api/stories:
+ *   get:
+ *     summary: Get list of stories
+ *     description: Returns a paginated list of stories. Supports filtering by category and sorting by popularity.
+ *     tags:
+ *       - Stories
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         description: Optional category ObjectId to filter stories by.
+ *         schema:
+ *           type: string
+ *         example: "6966a5cdbc1b90f344c2e0bb"
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         description: Optional. Use "popular" to sort stories by rate instead of by date.
+ *         schema:
+ *           type: string
+ *           enum: [popular]
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number. Must be integer >= 1.
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Items per page. Must be 1-100.
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         example: 10
+ *     responses:
+ *       200:
+ *         description: Stories list returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 stories:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/Story"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/Pagination"
+ *       400:
+ *         description: Invalid query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ValidationErrorResponse"
+ */
+
+/**
+ * @swagger
  * /api/stories/{storyId}:
  *   get:
  *     summary: Get story by id
@@ -94,4 +158,5 @@
  *       400:
  *         description: Invalid category id format or validation error
  */
+
 export {};

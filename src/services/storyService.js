@@ -68,6 +68,13 @@ export const getRecommendedStories = async ({
   return stories;
 };
 
+
+// GET /api/stories
+// Public endpoint: returns a paginated list of stories.
+// Optional ?category=<categoryId> narrows the list down to one category.
+// Optional ?type=popular sorts by rate instead of by date.
+// Sorting always ends with _id as a tie-breaker so pagination stays stable
+// even when several stories share the same `date`.
 export const getStories = async ({ page = 1, limit = 10, category, type }) => {
   const currentPage = Number(page);
   const perPage = Number(limit);
