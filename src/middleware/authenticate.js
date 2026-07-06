@@ -28,7 +28,7 @@ export const authenticate = async (req, res, next) => {
     throw createError(401, "Not authorized");
   }
 
-  const user = await UserModel.findById(payload.id);
+  const user = await UserModel.findById(payload.id).select("-password -__v");
 
   if (!user || user.token !== token) {
     throw createError(401, "Not authorized");
