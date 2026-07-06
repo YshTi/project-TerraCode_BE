@@ -11,4 +11,5 @@ export {
   storyIdSchema,
   recommendedStoriesQuerySchema,
   createStoryValidation,
+  storiesQuerySchema,
 } from "./storyValidations.js";

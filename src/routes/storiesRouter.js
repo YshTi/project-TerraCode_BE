@@ -7,6 +7,9 @@ import { recommendedStoriesQuerySchema } from "../validations/index.js";
 import { storyIdSchema } from "../validations/index.js";
 import { getStoryById } from "../controllers/stories/getStoryById.js";
 
+import { getStories } from "../controllers/stories/getStories.js";
+import { storiesQuerySchema } from "../validations/index.js";
+
 const storiesRouter = Router();
 
 storiesRouter.get(
@@ -14,6 +17,8 @@ storiesRouter.get(
   celebrate(recommendedStoriesQuerySchema),
   getRecommendedStories,
 );
+
+storiesRouter.get("/", celebrate(storiesQuerySchema), getStories);
 
 storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
 
