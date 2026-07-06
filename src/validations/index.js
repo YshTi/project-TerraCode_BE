@@ -7,6 +7,10 @@ const NAME_PATTERN =
 const PASSWORD_WHITESPACE_PATTERN = /\s/;
 const PASSWORD_SPECIAL_CHARACTER_PATTERN = /[\p{P}\p{S}]/u;
 
+const objectIdValidator = (value, helpers) => {
+  return !isValidObjectId(value) ? helpers.message("Invalid id format") : value;
+};
+
 export const registerUserValidation = celebrate(
   {
     [Segments.BODY]: Joi.object({
@@ -69,18 +73,6 @@ export const registerUserValidation = celebrate(
   },
 );
 
-// Валідація для objectId
-
-const objectIdValidator = (value, helpers) => {
-  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
-};
-
-export const storyIdSchema = {
-  [Segments.PARAMS]: Joi.object({
-    storyId: Joi.string().custom(objectIdValidator).required(),
-  }),
-};
-
 export const loginUserValidation = celebrate({
   [Segments.BODY]: Joi.object({
     email: Joi.string().trim().lowercase().email().required().messages({
@@ -98,6 +90,12 @@ export const loginUserValidation = celebrate({
   }).unknown(false),
 });
 
+export const storyIdSchema = {
+  [Segments.PARAMS]: Joi.object({
+    storyId: Joi.string().custom(objectIdValidator).required(),
+  }),
+};
+
 export const getCurrentUserStoriesValidation = celebrate({
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
@@ -107,11 +105,13 @@ export const getCurrentUserStoriesValidation = celebrate({
 
 export const updateCurrentUserValidation = celebrate({
   [Segments.BODY]: Joi.object({
-    name: Joi.string().trim().min(2).max(32).messages({
+    name: Joi.string().trim().min(2).max(32).pattern(NAME_PATTERN).messages({
       "string.base": "Name must be a string",
       "string.empty": "Name is required",
       "string.min": "Name must be at least 2 characters",
       "string.max": "Name must be at most 32 characters",
+      "string.pattern.base":
+        "Name can contain only English or Ukrainian letters, spaces, hyphens and apostrophes",
     }),
 
     email: Joi.string().trim().lowercase().email().max(64).messages({
@@ -125,7 +125,9 @@ export const updateCurrentUserValidation = celebrate({
       "string.base": "Avatar URL must be a string",
       "string.uri": "Avatar URL must be a valid URL",
     }),
-  }).unknown(false),
+  })
+    .min(1)
+    .unknown(false),
 });
 
 export const verifyEmailChangeValidation = celebrate({
@@ -140,7 +142,7 @@ export const verifyEmailChangeValidation = celebrate({
 
 export const recommendedStoriesQuerySchema = {
   [Segments.QUERY]: Joi.object({
-    category: Joi.string().custom(objectIdValidator).required(), 
+    category: Joi.string().custom(objectIdValidator).required(),
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(50).default(10),
   }),
