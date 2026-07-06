@@ -147,10 +147,15 @@ export const createStoryValidation = celebrate({
       "any.required": "Category ID is required",
     }),
 
-    date: Joi.string().trim().required().messages({
+    date: Joi.string().trim().pattern(NAME_PATTERN).required().messages({
       "string.base": "Date must be a string",
       "string.empty": "Date is required",
+      "string.pattern.base": "Date must be in YYYY-MM-DD format",
       "any.required": "Date is required",
     }),
-  }).unknown(false),
-});
+  }).unknown(false) 
+},
+{
+    abortEarly: false,
+  },
+);

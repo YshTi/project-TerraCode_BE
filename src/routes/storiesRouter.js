@@ -7,7 +7,7 @@ import { recommendedStoriesQuerySchema } from "../validations/index.js";
 import { storyIdSchema } from "../validations/index.js";
 import { getStoryById } from "../controllers/stories/getStoryById.js";
 
-import { createStoryController } from "../controllers/stories/createStoryController.js";
+import { usersController } from "../controllers/index.js";
 import { createStoryValidation } from "../validations/index.js";
 import { authenticate } from "../middleware/authenticate.js";
 
@@ -21,7 +21,7 @@ storiesRouter.get(
 
 storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
 
-storiesRouter.post("/", authenticate, createStoryValidation, createStoryController)
+storiesRouter.post("/", authenticate, createStoryValidation, usersController.createStoryController)
 
 
 

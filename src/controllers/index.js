@@ -9,6 +9,7 @@ import { getCurrentUser } from "./users/getCurrentUser.js";
 import { getCurrentUserStories } from "./users/getCurrentUserStories.js";
 import { getSavedStoriesController } from "./users/getSavedStories.js";
 import { addSavedStory, removeSavedStory } from "./users/savedStories.js";
+import { createStoryController } from "./stories/createStoryController.js";
 
 export const authController = {
   registerUser,
@@ -27,4 +28,5 @@ export const usersController = {
   getSavedStoriesController,
   addSavedStory,
   removeSavedStory,
+  createStoryController,
 };
