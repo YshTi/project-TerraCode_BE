@@ -5,6 +5,7 @@ import { getCategories } from "./categories/getCategories.js";
 import { getCurrentUserStories } from "./users/getCurrentUserStories.js";
 import { addSavedStory, removeSavedStory } from "./users/savedStories.js";
 import { getCurrentUser } from "./users/getCurrentUser.js";
+import { updateCurrentUser, verifyEmailChange } from "./users/updateCurrentUser.js";
 
 export const authController = {
   registerUser,
@@ -21,4 +22,6 @@ export const usersController = {
   getCurrentUserStories,
   addSavedStory,
   removeSavedStory,
+  updateCurrentUser,
+  verifyEmailChange,
 };

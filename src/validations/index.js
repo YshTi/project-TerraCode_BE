@@ -104,3 +104,36 @@ export const getCurrentUserStoriesValidation = celebrate({
     limit: Joi.number().integer().min(1).max(100).default(10),
   }),
 });
+
+export const updateCurrentUserValidation = celebrate({
+  [Segments.BODY]: Joi.object({
+    name: Joi.string().trim().min(2).max(32).messages({
+      "string.base": "Name must be a string",
+      "string.empty": "Name is required",
+      "string.min": "Name must be at least 2 characters",
+      "string.max": "Name must be at most 32 characters",
+    }),
+
+    email: Joi.string().trim().lowercase().email().max(64).messages({
+      "string.base": "Email must be a string",
+      "string.empty": "Email is required",
+      "string.email": "Email must be a valid email",
+      "string.max": "Email must be at most 64 characters",
+    }),
+
+    avatarUrl: Joi.string().trim().uri().allow("").messages({
+      "string.base": "Avatar URL must be a string",
+      "string.uri": "Avatar URL must be a valid URL",
+    }),
+  }).unknown(false),
+});
+
+export const verifyEmailChangeValidation = celebrate({
+  [Segments.QUERY]: Joi.object({
+    token: Joi.string().required().messages({
+      "string.base": "Token must be a string",
+      "string.empty": "Token is required",
+      "any.required": "Token is required",
+    }),
+  }),
+});
