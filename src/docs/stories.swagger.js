@@ -1,5 +1,85 @@
 /**
  * @swagger
+ * /api/stories:
+ *   get:
+ *     summary: Get stories list
+ *     description: >
+ *       Public endpoint for getting a paginated list of stories.
+ *       Supports optional filtering by category and optional sorting by popularity.
+ *     tags:
+ *       - Stories
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number. Must be an integer greater than or equal to 1.
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of stories per page. Must be between 1 and 100.
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         example: 10
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         description: Optional existing category ObjectId to filter stories by category.
+ *         schema:
+ *           type: string
+ *         example: "6966a5cdbc1b90f344c2e0bf"
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         description: >
+ *           Leave empty/not selected for the default story list.
+ *           If category is provided, this returns all stories from that category.
+ *           Use popular to sort stories by popularity/rating.
+ *           Any other value is invalid and returns a validation error.
+ *         schema:
+ *           type: string
+ *         example: popular
+ *     responses:
+ *       200:
+ *         description: Stories list returned successfully
+ *       400:
+ *         description: Invalid query parameters
+ *         content:
+ *           application/json:
+ *             examples:
+ *               invalidPage:
+ *                 summary: Invalid page
+ *                 value:
+ *                   message: "\"page\" must be greater than or equal to 1"
+ *               invalidLimit:
+ *                 summary: Invalid limit
+ *                 value:
+ *                   message: "\"limit\" must be less than or equal to 100"
+ *               invalidCategoryFormat:
+ *                 summary: Invalid category ObjectId format
+ *                 value:
+ *                   message: "Invalid id format"
+ *               invalidType:
+ *                 summary: Invalid type
+ *                 value:
+ *                   message: "\"type\" must be [popular]"
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Category not found"
+ */
+
+/**
+ * @swagger
  * /api/stories/{storyId}:
  *   get:
  *     summary: Get story by id
