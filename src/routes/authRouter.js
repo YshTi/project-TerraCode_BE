@@ -13,15 +13,17 @@ authRouter.post(
   "/register",
   registerUserValidation,
   ctrl.registerUser,
-  validationErrorHandler,
+  validationErrorHandler
 );
 
 authRouter.post(
   "/login",
   loginUserValidation,
   ctrl.loginUser,
-  validationErrorHandler,
+  validationErrorHandler
 );
+
+authRouter.post("/logout", authenticate, ctrl.logoutUser);
 
 authRouter.get(
   "/session",

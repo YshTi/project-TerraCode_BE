@@ -44,7 +44,7 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Unique email only for users that actually have email
@@ -55,7 +55,7 @@ userSchema.index(
     partialFilterExpression: {
       email: { $type: "string" },
     },
-  }
+  },
 );
 
 export const UserModel = model("user", userSchema);

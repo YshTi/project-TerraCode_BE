@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
-import jwt from "jsonwebtoken";
 
 import { UserModel } from "../models/index.js";
 
@@ -77,4 +76,15 @@ export const loginUser = async ({ email, password }) => {
   return {
     accessToken,
   };
+};
+
+export const logoutUser = async (userId) => {
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw createError(401, "Not authorized");
+  }
+
+  user.token = null;
+  await user.save();
 };
