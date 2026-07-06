@@ -18,8 +18,8 @@ storiesRouter.get(
   getRecommendedStories,
 );
 
-storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
-
 storiesRouter.get("/", celebrate(storiesQuerySchema), getStories);
+
+storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
 
 export default storiesRouter;
