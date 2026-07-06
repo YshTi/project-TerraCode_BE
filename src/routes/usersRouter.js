@@ -33,8 +33,6 @@ usersRouter.get(
   ctrl.getCurrentUserStories,
 );
 
-usersRouter.patch("/me/saved/:storyId", authenticate, ctrl.addSavedStory);
-
 usersRouter.get(
   "/me/saved",
   authenticate,
@@ -42,9 +40,17 @@ usersRouter.get(
   ctrl.getSavedStoriesController,
 );
 
-usersRouter.patch("/me/saved/:storyId", authenticate, ctrl.addSavedStory);
+usersRouter.patch(
+  "/me/saved/:storyId",
+  authenticate,
+  ctrl.addSavedStory,
+);
 
-usersRouter.delete("/me/saved/:storyId", authenticate, ctrl.removeSavedStory);
+usersRouter.delete(
+  "/me/saved/:storyId",
+  authenticate,
+  ctrl.removeSavedStory,
+);
 
 usersRouter.get("/:id", getUserProfileController);
 
