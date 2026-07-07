@@ -67,7 +67,11 @@ export const storiesQuerySchema = {
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(100).default(10),
-    category: Joi.string().custom(objectIdValidator),
+    // Note: category is intentionally NOT validated with objectIdValidator
+    // here. An invalid/non-existent category id for this endpoint should
+    // result in a 404 ("Category not found"), not a 400 validation error -
+    // that check happens in storyService.getStories instead.
+    category: Joi.string(),
     type: Joi.string().valid("popular"),
   }),
 };
