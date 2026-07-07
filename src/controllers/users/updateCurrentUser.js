@@ -15,13 +15,13 @@ export const updateCurrentUser = async (req, res, next) => {
 
 export const verifyEmailChange = async (req, res, next) => {
   try {
-    const user = await userService.verifyEmailChange({
+    const result = await userService.verifyEmailChange({
       token: req.query.token || req.body?.token,
     });
 
     res.status(200).json({
-      message: "Email was updated successfully",
-      user,
+      message: result.message,
+      user: result.user,
     });
   } catch (error) {
     next(error);
