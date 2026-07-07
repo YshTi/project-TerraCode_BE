@@ -1,6 +1,7 @@
 import { UserModel } from "../models/user.js";
 import { StoryModel } from "../models/index.js";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
+import createHttpError from "http-errors";
 
 export const getRecommendedStories = async ({
   category,
@@ -83,6 +84,10 @@ export const getStories = async ({ page = 1, limit = 10, category, type }) => {
   const filter = {};
 
   if (category) {
+    if (!isValidObjectId(category)) {
+      throw createHttpError(404, "Category not found");
+    }
+
     filter.category = category;
   }
 
