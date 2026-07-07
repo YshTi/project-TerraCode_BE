@@ -25,11 +25,11 @@ export const createStoryValidation = celebrate(
         "any.required": "Image is required",
       }),
 
-      title: Joi.string().trim().min(3).max(120).required().messages({
+      title: Joi.string().trim().min(2).max(40).required().messages({
         "string.base": "Title must be a string",
         "string.empty": "Title is required",
-        "string.min": "Title must be at least 3 characters",
-        "string.max": "Title must be at most 120 characters",
+        "string.min": "Title must be at least 2 characters",
+        "string.max": "Title must be at most 40 characters",
         "any.required": "Title is required",
       }),
 
