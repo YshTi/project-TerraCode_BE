@@ -5,6 +5,7 @@ export {
 
 export {
   getCurrentUserStoriesValidation,
+  userIdValidation,
 } from "./userValidations.js";
 
 export {
