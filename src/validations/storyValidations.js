@@ -15,10 +15,36 @@ export const recommendedStoriesQuerySchema = {
   }),
 };
 
+const MAX_IMAGE_SIZE = 1024 * 1024;
+
+const imageSizeValidator = async (value, helpers) => {
+  try {
+    const response = await fetch(value, { method: "HEAD" });
+    
+    if (!response.ok) {
+      return helpers.message("Image URL is not accessible");
+    }
+
+    const contentLength = response.headers.get("content-length");
+    
+    if (!contentLength) {
+      return helpers.message("Unable to verify image size");
+    }
+
+    if (Number(contentLength) > MAX_IMAGE_SIZE) {
+      return helpers.message("Image size must be less than 1MB");
+    }
+    return value; 
+  } catch (error) {
+    return helpers.message("Invalid image URL or server unreachable");
+  }
+};
+
+
 export const createStoryValidation = celebrate(
   {
     [Segments.BODY]: Joi.object({
-      img: Joi.string().trim().uri().required().messages({
+      img: Joi.string().trim().uri().castom(imageSizeValidator).required().messages({
         "string.base": "Image must be a string",
         "string.empty": "Image URL is required",
         "string.uri": "Image must be a valid URL",
