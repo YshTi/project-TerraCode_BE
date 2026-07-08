@@ -1,5 +1,90 @@
 /**
  * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get travellers list
+ *     description: Returns paginated public users list. Users with 0 articles are not returned.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of users per page
+ *     responses:
+ *       '200':
+ *         description: Travellers list returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 64f1a2b3c4d5e6f789012345
+ *                       name:
+ *                         type: string
+ *                         example: Софія Мельник
+ *                       avatarUrl:
+ *                         type: string
+ *                         example: https://example.com/avatar.jpg
+ *                       articlesAmount:
+ *                         type: integer
+ *                         example: 12
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     total:
+ *                       type: integer
+ *                       example: 13
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 2
+ *       '400':
+ *         description: Invalid pagination parameters
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: 400
+ *               message: Page must be at least 1
+ *       '404':
+ *         description: Page not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: 404
+ *               message: Page not found
+ *       '500':
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get public user profile
