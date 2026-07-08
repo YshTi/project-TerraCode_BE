@@ -15,43 +15,14 @@ export const recommendedStoriesQuerySchema = {
   }),
 };
 
-const MAX_IMAGE_SIZE = 1024 * 1024;
-
-const imageSizeValidator = async (value, helpers) => {
-  try {
-    const response = await fetch(value, { method: "HEAD" });
-    
-    if (!response.ok) {
-      return helpers.message("image.notFound");
-    }
-
-    const contentLength = response.headers.get("content-length");
-    
-    if (!contentLength) {
-      return helpers.message("image.noSize");
-    }
-
-    if (Number(contentLength) > MAX_IMAGE_SIZE) {
-      return helpers.message("any.custom");
-    }
-    return value; 
-  } catch (error) {
-    return helpers.message("image.notFound");
-  }
-};
-
-
 export const createStoryValidation = celebrate(
   {
     [Segments.BODY]: Joi.object({
-      img: Joi.string().trim().uri().custom(imageSizeValidator).required().messages({
+      img: Joi.string().trim().uri().required().messages({
         "string.base": "Image must be a string",
         "string.empty": "Image URL is required",
         "string.uri": "Image must be a valid URL",
-        "any.custom": "Image size must be less than 1MB",
         "any.required": "Image is required",
-        "image.notFound": "Image URL is not accessible or invalid",
-        "image.noSize": "Unable to verify image size",
       }),
 
       title: Joi.string().trim().min(2).max(40).required().messages({
