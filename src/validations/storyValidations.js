@@ -44,10 +44,11 @@ const imageSizeValidator = async (value, helpers) => {
 export const createStoryValidation = celebrate(
   {
     [Segments.BODY]: Joi.object({
-      img: Joi.string().trim().uri().castom(imageSizeValidator).required().messages({
+      img: Joi.string().trim().uri().custom(imageSizeValidator).required().messages({
         "string.base": "Image must be a string",
         "string.empty": "Image URL is required",
         "string.uri": "Image must be a valid URL",
+        "any.custom": "Image size must be less than 1MB",
         "any.required": "Image is required",
       }),
 
