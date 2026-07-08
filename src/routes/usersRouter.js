@@ -8,6 +8,7 @@ import {
 } from "../validations/index.js";
 import { getUserProfileController } from "../controllers/users/getUserProfileControllers.js";
 import { upload } from "../middleware/multer.js";
+import { getUsers } from "../controllers/users/getUsers.js";
 
 const usersRouter = Router();
 
@@ -30,6 +31,8 @@ usersRouter.get(
 usersRouter.patch("/me/saved/:storyId", authenticate, ctrl.addSavedStory);
 
 usersRouter.delete("/me/saved/:storyId", authenticate, ctrl.removeSavedStory);
+
+usersRouter.get("/", getUsers);
 
 usersRouter.get("/:id", userIdValidation, getUserProfileController);
 
