@@ -4,6 +4,7 @@ import { usersController as ctrl } from "../controllers/index.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { getCurrentUserStoriesValidation, userIdValidation } from "../validations/index.js";
 import { getUserProfileController } from "../controllers/users/getUserProfileControllers.js";
+import { getUsers } from "../controllers/users/getUsers.js";
 
 const usersRouter = Router();
 
@@ -26,6 +27,8 @@ usersRouter.get(
 usersRouter.patch("/me/saved/:storyId", authenticate, ctrl.addSavedStory);
 
 usersRouter.delete("/me/saved/:storyId", authenticate, ctrl.removeSavedStory);
+
+usersRouter.get("/", getUsers);
 
 usersRouter.get("/:id", userIdValidation, getUserProfileController);
 
