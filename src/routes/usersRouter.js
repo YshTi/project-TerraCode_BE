@@ -2,8 +2,12 @@ import { Router } from "express";
 
 import { usersController as ctrl } from "../controllers/index.js";
 import { authenticate } from "../middleware/authenticate.js";
-import { getCurrentUserStoriesValidation, userIdValidation } from "../validations/index.js";
+import {
+  getCurrentUserStoriesValidation,
+  userIdValidation,
+} from "../validations/index.js";
 import { getUserProfileController } from "../controllers/users/getUserProfileControllers.js";
+import { upload } from "../middleware/multer.js";
 
 const usersRouter = Router();
 
@@ -28,5 +32,12 @@ usersRouter.patch("/me/saved/:storyId", authenticate, ctrl.addSavedStory);
 usersRouter.delete("/me/saved/:storyId", authenticate, ctrl.removeSavedStory);
 
 usersRouter.get("/:id", userIdValidation, getUserProfileController);
+
+usersRouter.patch(
+  "me/updateAvatar",
+  authenticate,
+  upload.single("avatar"),
+  ctrl.updateAvatar,
+);
 
 export default usersRouter;
