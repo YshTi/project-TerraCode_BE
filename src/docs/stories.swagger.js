@@ -85,7 +85,12 @@
  *     summary: Create story
  *     description: >
  *       Private endpoint for creating a new story by the current authenticated user.
- *       The ownerId is taken from the authorization token, so it must not be sent in the request body.
+ *       The ownerId is taken from the authorization token, so it must not be sent
+ *       in the request body.
+ *
+ *       The img field must be a valid image URL. The server checks the URL with
+ *       a HEAD request, requires the Content-Length header, and rejects images
+ *       larger than 1MB.
  *     tags:
  *       - Stories
  *     security:
@@ -106,18 +111,22 @@
  *               img:
  *                 type: string
  *                 format: uri
- *                 description: Story image URL.
- *                 example: "https://example.com/story-image.jpg"
+ *                 description: >
+ *                   Story image URL. The URL must be accessible by the server.
+ *                   The server checks the image with a HEAD request, requires
+ *                   Content-Length, and rejects images larger than 1MB.
+ *                 example: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
  *               title:
  *                 type: string
- *                 minLength: 3
- *                 maxLength: 120
- *                 description: Story title.
+ *                 minLength: 2
+ *                 maxLength: 40
+ *                 description: Story title. Must be between 2 and 40 characters.
  *                 example: "My Green Tourism Story"
  *               article:
  *                 type: string
- *                 minLength: 10
- *                 description: Story article text.
+ *                 minLength: 12
+ *                 maxLength: 3000
+ *                 description: Story article text. Must be between 12 and 3000 characters.
  *                 example: "This is a story about a beautiful green tourism trip in Ukraine."
  *               category:
  *                 type: string
@@ -128,7 +137,7 @@
  *                 description: Story date in YYYY-MM-DD format.
  *                 example: "2026-07-06"
  *           example:
- *             img: "https://example.com/story-image.jpg"
+ *             img: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
  *             title: "My Green Tourism Story"
  *             article: "This is a story about a beautiful green tourism trip in Ukraine."
  *             category: "6966a5cdbc1b90f344c2e0bf"
@@ -143,7 +152,7 @@
  *               message: "Story created successfully"
  *               data:
  *                 _id: "68498236a100312bea016fe6"
- *                 img: "https://example.com/story-image.jpg"
+ *                 img: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
  *                 title: "My Green Tourism Story"
  *                 article: "This is a story about a beautiful green tourism trip in Ukraine."
  *                 category: "6966a5cdbc1b90f344c2e0bf"
@@ -153,7 +162,7 @@
  *                 createdAt: "2026-07-06T18:00:00.000Z"
  *                 updatedAt: "2026-07-06T18:00:00.000Z"
  *       400:
- *         description: Validation error or category does not exist
+ *         description: Validation error, invalid image URL, image too large, or category does not exist
  *         content:
  *           application/json:
  *             examples:
@@ -161,10 +170,38 @@
  *                 summary: Missing required fields
  *                 value:
  *                   message: "Validation failed"
- *               invalidImage:
- *                 summary: Invalid image URL
+ *               invalidImageUrl:
+ *                 summary: Invalid image URL format
  *                 value:
  *                   message: "Image must be a valid URL"
+ *               imageNotAccessible:
+ *                 summary: Image URL is not accessible
+ *                 value:
+ *                   message: "Image URL is not accessible or invalid"
+ *               imageSizeUnknown:
+ *                 summary: Image size cannot be verified
+ *                 value:
+ *                   message: "Unable to verify image size"
+ *               imageTooLarge:
+ *                 summary: Image is larger than 1MB
+ *                 value:
+ *                   message: "Image size must be less than 1MB"
+ *               invalidTitleMinLength:
+ *                 summary: Title is too short
+ *                 value:
+ *                   message: "Title must be at least 2 characters"
+ *               invalidTitleMaxLength:
+ *                 summary: Title is too long
+ *                 value:
+ *                   message: "Title must be at most 40 characters"
+ *               invalidArticleMinLength:
+ *                 summary: Article is too short
+ *                 value:
+ *                   message: "Article must be at least 12 characters"
+ *               invalidArticleMaxLength:
+ *                 summary: Article is too long
+ *                 value:
+ *                   message: "Article must be at most 3000 characters"
  *               invalidCategoryFormat:
  *                 summary: Invalid category ObjectId format
  *                 value:
