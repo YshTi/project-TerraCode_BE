@@ -22,21 +22,21 @@ const imageSizeValidator = async (value, helpers) => {
     const response = await fetch(value, { method: "HEAD" });
     
     if (!response.ok) {
-      return helpers.message("Image URL is not accessible");
+      return helpers.message("image.notFound");
     }
 
     const contentLength = response.headers.get("content-length");
     
     if (!contentLength) {
-      return helpers.message("Unable to verify image size");
+      return helpers.message("image.noSize");
     }
 
     if (Number(contentLength) > MAX_IMAGE_SIZE) {
-      return helpers.message("Image size must be less than 1MB");
+      return helpers.message("any.custom");
     }
     return value; 
   } catch (error) {
-    return helpers.message("Invalid image URL or server unreachable");
+    return helpers.message("image.notFound");
   }
 };
 
@@ -50,6 +50,8 @@ export const createStoryValidation = celebrate(
         "string.uri": "Image must be a valid URL",
         "any.custom": "Image size must be less than 1MB",
         "any.required": "Image is required",
+        "image.notFound": "Image URL is not accessible or invalid",
+        "image.noSize": "Unable to verify image size",
       }),
 
       title: Joi.string().trim().min(2).max(40).required().messages({
