@@ -101,7 +101,7 @@ export const loginUser = async ({ email, password }) => {
 export const refreshUserToken = async (refreshToken) => {
 
   if (!refreshToken) {
-    throw createError(401, "Refresh token missing");
+    throw createError(401, "User is not authorised");
   }
 
   let payload;
