@@ -13,6 +13,7 @@ import { addSavedStory, removeSavedStory } from "./users/savedStories.js";
 import { updateCurrentUser, verifyEmailChange } from "./users/updateCurrentUser.js";
 import { createStoryController } from "./stories/createStoryController.js";
 import { getUserProfileController } from "./users/getUserProfileControllers.js";
+import { updateAvatar } from "./users/updateAvatar.js";
 
 export const authController = {
   registerUser,
@@ -36,4 +37,5 @@ export const usersController = {
   updateCurrentUser,
   verifyEmailChange,
   createStoryController,
+  updateAvatar,
 };

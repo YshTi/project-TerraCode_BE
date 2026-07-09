@@ -3,6 +3,7 @@ import { Router } from "express";
 import { usersController as ctrl } from "../controllers/index.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { getUserProfileController } from "../controllers/users/getUserProfileControllers.js";
+import { upload } from "../middleware/multer.js";
 import {
   getCurrentUserStoriesValidation,
   updateCurrentUserValidation,
@@ -57,5 +58,12 @@ usersRouter.delete(
 usersRouter.get("/", getUsers);
 
 usersRouter.get("/:id", userIdValidation, getUserProfileController);
+
+usersRouter.patch(
+  "/me/updateAvatar",
+  authenticate,
+  upload.single("avatar"),
+  ctrl.updateAvatar,
+);
 
 export default usersRouter;
