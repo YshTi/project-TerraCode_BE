@@ -1,18 +1,32 @@
 import createHttpError from "http-errors";
 import { UserModel } from "../../models/user.js";
 
+const parsePositiveIntegerQuery = (value, defaultValue, fieldName, maxValue = null) => {
+  if (value === undefined) {
+    return defaultValue;
+  }
+
+  const number = Number(value);
+
+  if (!Number.isInteger(number)) {
+    throw createHttpError(400, `${fieldName} must be an integer`);
+  }
+
+  if (number < 1) {
+    throw createHttpError(400, `${fieldName} must be at least 1`);
+  }
+
+  if (maxValue !== null && number > maxValue) {
+    throw createHttpError(400, `${fieldName} must be at most ${maxValue}`);
+  }
+
+  return number;
+};
+
 export const getUsers = async (req, res, next) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-
-    if (page < 1) {
-      throw createHttpError(400, "Page must be at least 1");
-    }
-
-    if (limit < 1) {
-      throw createHttpError(400, "Limit must be at least 1");
-    }
+    const page = parsePositiveIntegerQuery(req.query.page, 1, "Page");
+    const limit = parsePositiveIntegerQuery(req.query.limit, 10, "Limit", 100);
 
     const skip = (page - 1) * limit;
     const filter = { articlesAmount: { $gt: 0 } };
