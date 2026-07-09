@@ -36,11 +36,11 @@
  *           Use 0 to test the validation error.
  *         schema:
  *           type: integer
- *           default: 10
+ *           default: 12
  *         examples:
  *           valid:
  *             summary: Valid limit
- *             value: 10
+ *             value: 12
  *           invalidZero:
  *             summary: Invalid limit for testing
  *             value: 0
@@ -299,6 +299,229 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ */
+
+/**
+ * @swagger
+ * /api/users/me:
+ *   patch:
+ *     summary: Update current user profile
+ *     description: >
+ *       Updates the current authenticated user's profile.
+ *
+ *       The user can update name and avatarUrl directly.
+ *       If email is provided, the email is not changed immediately.
+ *       Instead, the backend sends a verification email to the new address.
+ *
+ *       The avatarUrl must be a valid image URL. The backend checks the remote
+ *       image with a HEAD request, requires Content-Length, and rejects images
+ *       larger than 1MB.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             additionalProperties: false
+ *             minProperties: 1
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 32
+ *                 description: >
+ *                   User name. Can contain only English or Ukrainian letters,
+ *                   spaces, hyphens and apostrophes.
+ *                 example: "Test User Updated"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 maxLength: 64
+ *                 description: >
+ *                   New email address. If provided, the backend sends a verification
+ *                   email first. The email is updated only after the verification
+ *                   link is opened.
+ *                 example: "new-email@example.com"
+ *               avatarUrl:
+ *                 type: string
+ *                 format: uri
+ *                 description: >
+ *                   Avatar image URL. The URL must be accessible by the backend,
+ *                   must point to an image, must provide Content-Length, and the
+ *                   image size must be less than 1MB.
+ *                 example: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
+ *           examples:
+ *             updateName:
+ *               summary: Update name
+ *               value:
+ *                 name: "Test User Updated"
+ *             updateAvatar:
+ *               summary: Update avatar with valid small image
+ *               value:
+ *                 avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
+ *             updateEmail:
+ *               summary: Request email change
+ *               value:
+ *                 email: "new-email@example.com"
+ *             invalidBigAvatar:
+ *               summary: Invalid avatar larger than 1MB for testing
+ *               value:
+ *                 avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg"
+ *     responses:
+ *       200:
+ *         description: User profile updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User updated successfully"
+ *               user:
+ *                 id: "6a4cc59220dfa9bd7d20befb"
+ *                 name: "Test User Updated"
+ *                 email: "testuser@example.com"
+ *                 avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
+ *                 articlesAmount: 0
+ *                 savedArticles: []
+ *                 createdAt: "2026-07-07T09:23:31.055Z"
+ *                 updatedAt: "2026-07-09T11:20:41.628Z"
+ *       202:
+ *         description: Verification email was sent for email change
+ *         content:
+ *           application/json:
+ *             example:
+ *               requiresEmailVerification: true
+ *               message: "Verification email sent. Please confirm the new email address."
+ *               email: "new-email@example.com"
+ *       400:
+ *         description: Validation error or invalid avatar image URL
+ *         content:
+ *           application/json:
+ *             examples:
+ *               noFields:
+ *                 summary: No valid fields provided
+ *                 value:
+ *                   message: "No valid fields provided"
+ *               invalidName:
+ *                 summary: Invalid name
+ *                 value:
+ *                   message: "Name must be at least 2 characters"
+ *               invalidEmail:
+ *                 summary: Invalid email
+ *                 value:
+ *                   message: "Email must be a valid email"
+ *               invalidAvatarUrl:
+ *                 summary: Avatar URL is not a valid URL
+ *                 value:
+ *                   message: "Avatar URL must be a valid URL"
+ *               avatarNotAccessible:
+ *                 summary: Avatar image URL is not accessible
+ *                 value:
+ *                   message: "Avatar image URL is not accessible or invalid"
+ *               avatarNotImage:
+ *                 summary: Avatar URL does not point to an image
+ *                 value:
+ *                   message: "Avatar image URL must point to an image"
+ *               avatarSizeUnknown:
+ *                 summary: Avatar image size cannot be verified
+ *                 value:
+ *                   message: "Unable to verify avatar image size"
+ *               avatarTooLarge:
+ *                 summary: Avatar image is larger than 1MB
+ *                 value:
+ *                   message: "Avatar image size must be less than 1MB"
+ *       401:
+ *         description: User is not authorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Not authorized"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User not found"
+ *       409:
+ *         description: Email already exists
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User with this email already exists"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+/**
+ * @swagger
+ * /api/users/me/verify-email:
+ *   get:
+ *     summary: Verify email change
+ *     description: >
+ *       Verifies an email-change token and updates the user's email address.
+ *       The token is sent in the verification email generated by PATCH /api/users/me.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         description: Email verification token from the email link.
+ *         schema:
+ *           type: string
+ *         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *     responses:
+ *       200:
+ *         description: Email was updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Email was updated successfully"
+ *               user:
+ *                 id: "6a4cc59220dfa9bd7d20befb"
+ *                 name: "Test User"
+ *                 email: "new-email@example.com"
+ *                 avatarUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Example.jpg"
+ *                 articlesAmount: 0
+ *                 savedArticles: []
+ *                 createdAt: "2026-07-07T09:23:31.055Z"
+ *                 updatedAt: "2026-07-09T11:20:41.628Z"
+ *       400:
+ *         description: Missing verification token
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Token is required"
+ *       401:
+ *         description: Invalid or expired verification token
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid or expired verification token"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User not found"
+ *       409:
+ *         description: Email already exists
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User with this email already exists"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
  */
 
 /**
