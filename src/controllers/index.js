@@ -2,6 +2,7 @@ import { registerUser } from "./auth/registerUser.js";
 import { loginUser } from "./auth/loginUser.js";
 import { logoutUser } from "./auth/logoutUser.js";
 import { checkSession } from "./auth/checkSession.js";
+import { refreshUser } from "./auth/refreshUser.js";
 
 import { getCategories } from "./categories/getCategories.js";
 
@@ -18,6 +19,7 @@ export const authController = {
   loginUser,
   logoutUser,
   checkSession,
+  refreshUser,
 };
 
 export const categoriesController = {
