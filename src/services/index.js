@@ -4,6 +4,7 @@ import {
   logoutUser,
   createSessionToken,
   formatUser,
+  refreshUserToken,
 } from "./authService.js";
 
 import {
@@ -19,6 +20,7 @@ export const authService = {
   logoutUser,
   createSessionToken,
   formatUser,
+  refreshUserToken,
 };
 
 export const userService = {

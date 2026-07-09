@@ -8,6 +8,9 @@ import {
   updateCurrentUserValidation,
   verifyEmailChangeValidation,
 } from "../validations/index.js";
+import { getCurrentUserStoriesValidation, userIdValidation } from "../validations/index.js";
+import { getUserProfileController } from "../controllers/users/getUserProfileControllers.js";
+import { getUsers } from "../controllers/users/getUsers.js";
 
 const usersRouter = Router();
 
@@ -52,6 +55,8 @@ usersRouter.delete(
   ctrl.removeSavedStory,
 );
 
-usersRouter.get("/:id", getUserProfileController);
+usersRouter.get("/", getUsers);
+
+usersRouter.get("/:id", userIdValidation, getUserProfileController);
 
 export default usersRouter;

@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Local files for pull requests
 pullrequests-list.txt
+
+# idea files
+.idea

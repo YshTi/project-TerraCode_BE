@@ -1,5 +1,8 @@
-import { UserModel } from "../models/user.js";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
+import createHttpError from "http-errors";
+import createError from "http-errors";
+
+import { StoryModel, UserModel, CategoryModel } from "../models/index.js";
 
 export const getRecommendedStories = async ({
   category,
@@ -65,4 +68,57 @@ export const getRecommendedStories = async ({
   const stories = await UserModel.aggregate(aggregationSteps);
 
   return stories;
+};
+
+
+export const getStories = async ({ page = 1, limit = 10, category, type }) => {
+  const currentPage = Number(page);
+  const perPage = Number(limit);
+  const skip = (currentPage - 1) * perPage;
+
+  const filter = {};
+
+  if (category) {
+    if (!isValidObjectId(category)) {
+      throw createHttpError(404, "Category not found");
+    }
+    const categoryExists = await CategoryModel.exists({ _id: category });
+
+    if (!categoryExists) {
+      throw createError(404, "Category not found");
+    }
+
+    filter.category = category;
+  }
+
+  const sort =
+    type === "popular"
+      ? { rate: -1, date: -1, _id: -1 }
+      : { date: -1, _id: -1 };
+
+  const [stories, total] = await Promise.all([
+    StoryModel.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(perPage)
+      .populate("category")
+      .populate("ownerId", "name avatarUrl")
+      .lean(),
+
+    StoryModel.countDocuments(filter),
+  ]);
+
+  const totalPages = Math.ceil(total / perPage);
+
+  return {
+    stories,
+    pagination: {
+      page: currentPage,
+      limit: perPage,
+      total,
+      totalPages,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    },
+  };
 };

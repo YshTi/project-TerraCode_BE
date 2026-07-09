@@ -1,15 +1,10 @@
 import { celebrate, Joi, Segments } from "celebrate";
-import { isValidObjectId } from "mongoose";
 
 const NAME_PATTERN =
   /^[A-Za-zА-Яа-яІіЇїЄєҐґ]+(?:[ '’-][A-Za-zА-Яа-яІіЇїЄєҐґ]+)*$/u;
 
 const PASSWORD_WHITESPACE_PATTERN = /\s/;
 const PASSWORD_SPECIAL_CHARACTER_PATTERN = /[\p{P}\p{S}]/u;
-
-const objectIdValidator = (value, helpers) => {
-  return !isValidObjectId(value) ? helpers.message("Invalid id format") : value;
-};
 
 export const registerUserValidation = celebrate(
   {
@@ -89,77 +84,3 @@ export const loginUserValidation = celebrate({
     }),
   }).unknown(false),
 });
-
-export const storyIdSchema = {
-  [Segments.PARAMS]: Joi.object({
-    storyId: Joi.string().custom(objectIdValidator).required(),
-  }),
-};
-
-export const getCurrentUserStoriesValidation = celebrate({
-  [Segments.QUERY]: Joi.object({
-    page: Joi.number().integer().min(1).default(1),
-    limit: Joi.number().integer().min(1).max(100).default(10),
-  }),
-});
-
-export const updateCurrentUserValidation = celebrate({
-  [Segments.BODY]: Joi.object({
-    name: Joi.string().trim().min(2).max(32).pattern(NAME_PATTERN).messages({
-      "string.base": "Name must be a string",
-      "string.empty": "Name is required",
-      "string.min": "Name must be at least 2 characters",
-      "string.max": "Name must be at most 32 characters",
-      "string.pattern.base":
-        "Name can contain only English or Ukrainian letters, spaces, hyphens and apostrophes",
-    }),
-
-    email: Joi.string().trim().lowercase().email().max(64).messages({
-      "string.base": "Email must be a string",
-      "string.empty": "Email is required",
-      "string.email": "Email must be a valid email",
-      "string.max": "Email must be at most 64 characters",
-    }),
-
-    avatarUrl: Joi.string().trim().uri().allow("").messages({
-      "string.base": "Avatar URL must be a string",
-      "string.uri": "Avatar URL must be a valid URL",
-    }),
-  })
-    .min(1)
-    .unknown(false),
-});
-
-export const verifyEmailChangeValidation = celebrate({
-  [Segments.QUERY]: Joi.object({
-    token: Joi.string().required().messages({
-      "string.base": "Token must be a string",
-      "string.empty": "Token is required",
-      "any.required": "Token is required",
-    }),
-  }),
-});
-
-export const recommendedStoriesQuerySchema = {
-  [Segments.QUERY]: Joi.object({
-    category: Joi.string().custom(objectIdValidator).required(),
-    page: Joi.number().integer().min(1).default(1),
-    limit: Joi.number().integer().min(1).max(50).default(10),
-  }),
-};
-export {
-  registerUserValidation,
-  loginUserValidation,
-} from "./authValidations.js";
-
-export {
-  getCurrentUserStoriesValidation,
-  userIdValidation,
-} from "./userValidations.js";
-
-export {
-  storyIdSchema,
-  recommendedStoriesQuerySchema,
-  createStoryValidation,
-  storiesQuerySchema,
-} from "./storyValidations.js";

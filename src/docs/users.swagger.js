@@ -1,5 +1,152 @@
 /**
  * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get travellers list
+ *     description: >
+ *       Returns paginated public users list.
+ *       Users with 0 articles are not returned.
+ *
+ *       Valid page and limit values must be positive integers.
+ *       For QA testing, you can enter page=0 or limit=0 to check validation errors.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: >
+ *           Page number. Must be an integer greater than or equal to 1.
+ *           Use 0 to test the validation error.
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         examples:
+ *           valid:
+ *             summary: Valid page
+ *             value: 1
+ *           invalidZero:
+ *             summary: Invalid page for testing
+ *             value: 0
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: >
+ *           Number of users per page. Must be an integer from 1 to 100.
+ *           Use 0 to test the validation error.
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         examples:
+ *           valid:
+ *             summary: Valid limit
+ *             value: 10
+ *           invalidZero:
+ *             summary: Invalid limit for testing
+ *             value: 0
+ *           invalidTooLarge:
+ *             summary: Invalid limit greater than 100
+ *             value: 101
+ *     responses:
+ *       '200':
+ *         description: Travellers list returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "64f1a2b3c4d5e6f789012345"
+ *                       name:
+ *                         type: string
+ *                         example: "Софія Мельник"
+ *                       avatarUrl:
+ *                         type: string
+ *                         example: "https://example.com/avatar.jpg"
+ *                       articlesAmount:
+ *                         type: integer
+ *                         example: 12
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     total:
+ *                       type: integer
+ *                       example: 13
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 2
+ *             example:
+ *               status: 200
+ *               data:
+ *                 - _id: "64f1a2b3c4d5e6f789012345"
+ *                   name: "Софія Мельник"
+ *                   avatarUrl: "https://example.com/avatar.jpg"
+ *                   articlesAmount: 12
+ *                 - _id: "64f1a2b3c4d5e6f789012346"
+ *                   name: "Анна Коваль"
+ *                   avatarUrl: "https://example.com/avatar2.jpg"
+ *                   articlesAmount: 7
+ *               pagination:
+ *                 page: 1
+ *                 limit: 10
+ *                 total: 13
+ *                 totalPages: 2
+ *       '400':
+ *         description: Invalid pagination parameters
+ *         content:
+ *           application/json:
+ *             examples:
+ *               invalidPageType:
+ *                 summary: Page is not an integer
+ *                 value:
+ *                   message: "Page must be an integer"
+ *               invalidPageMin:
+ *                 summary: Page is less than 1
+ *                 value:
+ *                   message: "Page must be at least 1"
+ *               invalidLimitType:
+ *                 summary: Limit is not an integer
+ *                 value:
+ *                   message: "Limit must be an integer"
+ *               invalidLimitMin:
+ *                 summary: Limit is less than 1
+ *                 value:
+ *                   message: "Limit must be at least 1"
+ *               invalidLimitMax:
+ *                 summary: Limit is greater than 100
+ *                 value:
+ *                   message: "Limit must be at most 100"
+ *       '404':
+ *         description: Requested page does not exist
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Page not found"
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get public user profile
