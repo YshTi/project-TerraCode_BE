@@ -107,17 +107,31 @@ export const addStoryToSaved = async ({ userId, storyId }) => {
     throw createError(404, "Story not found");
   }
 
-  const user = await UserModel.findByIdAndUpdate(
-    userId,
-    { $addToSet: { savedArticles: storyId } },
-    { new: true },
-  ).select("-password");
+  const updateResult = await UserModel.updateOne(
+    {
+      _id: userId,
+      savedArticles: { $ne: story._id },
+    },
+    { $addToSet: { savedArticles: story._id } },
+  );
 
-  if (!user) {
-    throw createError(404, "User not found");
+  if (updateResult.matchedCount === 0) {
+    const userExists = await UserModel.exists({ _id: userId });
+
+    if (!userExists) {
+      throw createError(404, "User not found");
+    }
   }
 
-  return user;
+  if (updateResult.modifiedCount > 0) {
+    await StoryModel.findByIdAndUpdate(story._id, {
+      $inc: { rate: 1 },
+    });
+  }
+
+  const updatedUser = await UserModel.findById(userId).select("-password");
+
+  return updatedUser;
 };
 
 export const removeStoryFromSaved = async ({ userId, storyId }) => {
@@ -131,25 +145,31 @@ export const removeStoryFromSaved = async ({ userId, storyId }) => {
     throw createError(404, "Story not found");
   }
 
-  const user = await UserModel.findById(userId).select("savedArticles");
-
-  if (!user) {
-    throw createError(404, "User not found");
-  }
-
-  const isSaved = user.savedArticles.some(
-    (savedStoryId) => savedStoryId.toString() === storyId,
+  const updateResult = await UserModel.updateOne(
+    {
+      _id: userId,
+      savedArticles: story._id,
+    },
+    { $pull: { savedArticles: story._id } },
   );
 
-  if (!isSaved) {
+  if (updateResult.matchedCount === 0) {
+    const userExists = await UserModel.exists({ _id: userId });
+
+    if (!userExists) {
+      throw createError(404, "User not found");
+    }
+
     throw createError(404, "Story is not in saved stories");
   }
 
-  const updatedUser = await UserModel.findByIdAndUpdate(
-    userId,
-    { $pull: { savedArticles: storyId } },
-    { new: true },
-  ).select("-password");
+  if (updateResult.modifiedCount > 0) {
+    await StoryModel.findByIdAndUpdate(story._id, {
+      $inc: { rate: -1 },
+    });
+  }
+
+  const updatedUser = await UserModel.findById(userId).select("-password");
 
   return updatedUser;
 };
