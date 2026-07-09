@@ -4,7 +4,7 @@ export const logoutUser = async (req, res, next) => {
   try {
     await authService.logoutUser(req.user._id);
 
-    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
 
     return res.sendStatus(204);
   } catch (error) {

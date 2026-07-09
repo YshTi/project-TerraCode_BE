@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validationErrorHandler } from "../middleware/validationErrorHandler.js";
 import { authController as ctrl } from "../controllers/index.js";
 import { authenticate } from "../middleware/authenticate.js";
+import { refreshUser } from "../controllers/auth/refreshUser.js";
 import {
   registerUserValidation,
   loginUserValidation,
@@ -30,5 +31,7 @@ authRouter.get(
   authenticate,
   ctrl.checkSession,
 );
+
+authRouter.post("/refresh", refreshUser);
 
 export default authRouter;

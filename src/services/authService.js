@@ -6,6 +6,26 @@ import { UserModel } from "../models/index.js";
 
 const SALT_ROUNDS = 10;
 
+export const createAccessToken = (user) => {
+  return jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "24h",
+      }
+  );
+};
+
+export const createRefreshToken = (user) => {
+  return jwt.sign(
+      { id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      {
+        expiresIn: "7d",
+      }
+  );
+};
+
 export const createSessionToken = (user) => {
   return jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, {
     expiresIn: "1h",
@@ -60,15 +80,22 @@ export const loginUser = async ({ email, password }) => {
     throw createError(401, "Email or password is invalid");
   }
 
-  const accessToken = jwt.sign(
-    {
-      id: user._id,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "24h",
-    }
+  const accessToken = createAccessToken(user);
+
+  const refreshToken = createRefreshToken(user);
+
+  user.token = accessToken;
+  user.refreshToken = refreshToken;
+  user.refreshTokenExpiresAt = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
   );
+
+  await user.save();
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 
   user.token = accessToken;
   await user.save();
@@ -76,6 +103,49 @@ export const loginUser = async ({ email, password }) => {
   return {
     accessToken,
   };
+};
+
+export const refreshUserToken = async (refreshToken) => {
+
+  if (!refreshToken) {
+    throw createError(401, "Refresh token missing");
+  }
+
+  let payload;
+
+  try {
+
+    payload = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET
+    );
+
+  } catch {
+
+    throw createError(401, "Refresh token expired");
+  }
+
+  const user = await UserModel.findById(payload.id);
+
+  if (!user) {
+    throw createError(401);
+  }
+
+  if (user.refreshToken !== refreshToken) {
+    throw createError(401, "Invalid refresh token");
+  }
+
+  if (user.refreshTokenExpiresAt < new Date()) {
+    throw createError(401, "Refresh token expired");
+  }
+
+  const newAccessToken = createAccessToken(user);
+
+  user.token = newAccessToken;
+
+  await user.save();
+
+  return newAccessToken;
 };
 
 export const logoutUser = async (userId) => {
@@ -86,5 +156,7 @@ export const logoutUser = async (userId) => {
   }
 
   user.token = null;
+  user.refreshToken = null;
+  user.refreshTokenExpiresAt = null;
   await user.save();
 };
