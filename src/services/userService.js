@@ -3,7 +3,8 @@ import createError from "http-errors";
 import mongoose from "mongoose";
 
 import { StoryModel, UserModel } from "../models/index.js";
-import { sendEmailVerification } from "../utils/sendEmail.js";
+import { sendEmailVerification, validateImageUrl } from "../utils/index.js";
+
 
 const EMAIL_CHANGE_SECRET =
   process.env.EMAIL_CHANGE_SECRET || "dev-email-change-secret";
@@ -163,6 +164,13 @@ export const updateCurrentUser = async ({ user, data }) => {
     }
   }
 
+  if (
+    Object.prototype.hasOwnProperty.call(updates, "avatarUrl") &&
+    updates.avatarUrl
+  ) {
+    await validateImageUrl(updates.avatarUrl, "Avatar image");
+  }
+
   if (Object.prototype.hasOwnProperty.call(data, "email")) {
     const newEmail = String(data.email).trim().toLowerCase();
 
@@ -170,32 +178,44 @@ export const updateCurrentUser = async ({ user, data }) => {
       throw createError(400, "Email is required");
     }
 
-    const existingUser = await UserModel.findOne({ email: newEmail });
+    if (newEmail === user.email) {
+      if (Object.keys(updates).length === 0) {
+        throw createError(400, "New email must be different from current email");
+      }
+    } else {
+      const existingUser = await UserModel.findOne({ email: newEmail });
 
-    if (existingUser && existingUser._id.toString() !== user._id.toString()) {
-      throw createError(409, "User with this email already exists");
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        throw createError(409, "User with this email already exists");
+      }
+
+      const token = jwt.sign(
+        { userId: user._id.toString(), newEmail },
+        EMAIL_CHANGE_SECRET,
+        { expiresIn: "1h" },
+      );
+
+      const backendUrl =
+        process.env.BACKEND_URL ||
+        process.env.DEPLOYED_SERVER_URL ||
+        "http://localhost:3000";
+
+      const verificationUrl = `${backendUrl.replace(
+        /\/$/,
+        "",
+      )}/api/users/me/verify-email?token=${encodeURIComponent(token)}`;
+
+      await sendEmailVerification({
+        to: newEmail,
+        verificationUrl,
+      });
+
+      return {
+        requiresEmailVerification: true,
+        message: "Verification email sent. Please confirm the new email address.",
+        email: newEmail,
+      };
     }
-
-    const token = jwt.sign(
-      { userId: user._id.toString(), newEmail },
-      EMAIL_CHANGE_SECRET,
-      { expiresIn: "1h" },
-    );
-
-    const verificationUrl = `${
-      process.env.CLIENT_URL || "http://localhost:3000"
-    }/verify-email?token=${token}`;
-
-    await sendEmailVerification({
-      to: newEmail,
-      verificationUrl,
-    });
-
-    return {
-      requiresEmailVerification: true,
-      message: "Verification email sent. Please confirm the new email address.",
-      email: newEmail,
-    };
   }
 
   if (Object.keys(updates).length === 0) {
