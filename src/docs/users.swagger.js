@@ -649,9 +649,12 @@
 /**
  * @swagger
  * /api/users/me/saved/{storyId}:
- *   patch:
+ *   post:
  *     summary: Add story to saved stories
- *     description: Adds a story to the authenticated user's saved stories.
+ *     description: >
+ *       Adds a story to the authenticated user's saved stories.
+ *       If the story was not already saved, the story rate is increased by 1.
+ *       If the story was already saved, the saved list and story rate are not changed.
  *     tags:
  *       - Users
  *     security:
@@ -660,13 +663,25 @@
  *       - in: path
  *         name: storyId
  *         required: true
- *         description: Story MongoDB ObjectId. Backend validates that it must be a valid 24-character ObjectId. Use abc to test invalid id response.
+ *         description: >
+ *           Story MongoDB ObjectId. Backend validates that it must be a valid
+ *           24-character ObjectId. Use "abc" to test invalid id response.
  *         schema:
  *           type: string
- *         example: "68498236a100312bea018fe6"
+ *           example: "68498236a100312bea018fe6"
  *     responses:
  *       200:
  *         description: Story added to saved successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Story added to saved successfully"
+ *               data:
+ *                 _id: "68498236a100312bea018fe6"
+ *                 name: "John Doe"
+ *                 email: "john@example.com"
+ *                 savedArticles:
+ *                   - "68498236a100312bea018fe6"
  *       400:
  *         description: Invalid story id format
  *         content:
@@ -675,8 +690,16 @@
  *               message: "Invalid story id format"
  *       401:
  *         description: Not authorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Not authorized"
  *       404:
  *         description: Story not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Story not found"
  */
 
 /**

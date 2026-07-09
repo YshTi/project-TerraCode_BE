@@ -43,7 +43,7 @@ usersRouter.get(
   ctrl.getSavedStoriesController,
 );
 
-usersRouter.patch(
+usersRouter.post(
   "/me/saved/:storyId",
   authenticate,
   ctrl.addSavedStory,
