@@ -1,12 +1,16 @@
 import https from "node:https";
 
-const EMAIL_API_URL = process.env.EMAIL_API_URL || "https://api.brevo.com/v3/smtp/email";
+const EMAIL_API_URL =
+  process.env.EMAIL_API_URL || "https://api.brevo.com/v3/smtp/email";
 const EMAIL_API_KEY = process.env.EMAIL_API_KEY;
-const EMAIL_FROM = process.env.EMAIL_FROM || process.env.SMTP_FROM || "no-reply@example.com";
+const EMAIL_FROM =
+  process.env.EMAIL_FROM || process.env.SMTP_FROM || "no-reply@example.com";
 
 export const sendEmailVerification = async ({ to, verificationUrl }) => {
   if (!EMAIL_API_KEY) {
-    console.log("Email provider API key is not configured. Verification email was not sent.");
+    console.log(
+      "Email provider API key is not configured. Verification email was not sent.",
+    );
     console.log(`Verification URL: ${verificationUrl}`);
 
     return {
@@ -57,7 +61,11 @@ export const sendEmailVerification = async ({ to, verificationUrl }) => {
     req.end();
   });
 
-  if (response.statusCode && response.statusCode >= 200 && response.statusCode < 300) {
+  if (
+    response.statusCode &&
+    response.statusCode >= 200 &&
+    response.statusCode < 300
+  ) {
     return {
       delivered: true,
     };
