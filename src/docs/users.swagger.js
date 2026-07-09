@@ -526,6 +526,97 @@
 
 /**
  * @swagger
+ * /api/users/me/updateAvatar:
+ *   patch:
+ *     summary: Upload current user avatar
+ *     description: >
+ *       Uploads a new avatar image for the authenticated user.
+ *
+ *       This endpoint uses multipart/form-data, not JSON.
+ *       The file field name must be avatar.
+ *
+ *       Allowed file types: JPEG, JPG, PNG, GIF, and WebP.
+ *       Maximum file size: 1MB.
+ *
+ *       After successful upload, the image is saved to Cloudinary and the user's
+ *       avatarUrl is updated.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: >
+ *                   Avatar image file. Allowed formats: JPEG, JPG, PNG, GIF, WebP.
+ *                   Maximum size: 1MB.
+ *           encoding:
+ *             avatar:
+ *               contentType: image/jpeg, image/png, image/gif, image/webp
+ *     responses:
+ *       200:
+ *         description: Avatar updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Avatar updated successfully"
+ *               user:
+ *                 id: "6a4cc59220dfa9bd7d20befb"
+ *                 name: "Test User"
+ *                 email: "testuser@example.com"
+ *                 avatarUrl: "https://res.cloudinary.com/demo/image/upload/v1234567890/userAvatars/avatar_6a4cc59220dfa9bd7d20befb.jpg"
+ *                 articlesAmount: 0
+ *                 savedArticles: []
+ *                 createdAt: "2026-07-07T09:23:31.055Z"
+ *                 updatedAt: "2026-07-09T12:49:41.628Z"
+ *       400:
+ *         description: Missing file, invalid file type, or file too large
+ *         content:
+ *           application/json:
+ *             examples:
+ *               missingAvatar:
+ *                 summary: Avatar file was not provided
+ *                 value:
+ *                   message: "Avatar file is required"
+ *               fileTooLarge:
+ *                 summary: Avatar file is larger than 1MB
+ *                 value:
+ *                   message: "Avatar file size must be less than 1MB"
+ *               invalidFileType:
+ *                 summary: Unsupported file type
+ *                 value:
+ *                   message: "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed."
+ *       401:
+ *         description: User is not authorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Not authorized"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User not found"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+/**
+ * @swagger
  * /api/users/me/stories:
  *   get:
  *     summary: Get current user's stories
