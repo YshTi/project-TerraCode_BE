@@ -9,7 +9,6 @@ import {
   verifyEmailChangeValidation,
   userIdValidation
 } from "../validations/index.js";
-import { getUserProfileController } from "../controllers/users/getUserProfileControllers.js";
 import { getUsers } from "../controllers/users/getUsers.js";
 
 const usersRouter = Router();
