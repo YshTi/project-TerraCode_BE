@@ -1,26 +1,7 @@
 import createHttpError from "http-errors";
 import { StoryModel } from "../../models/story.js";
 import { CategoryModel } from "../../models/category.js";
-
-const MAX_IMAGE_SIZE = 1024 * 1024;
-
-const checkImageSize = async (imageUrl) => {
-  const response = await fetch(imageUrl, { method: "HEAD" });
-
-  if (!response.ok) {
-    throw createHttpError(400, "Image URL is not accessible or invalid");
-  }
-
-  const contentLength = response.headers.get("content-length");
-
-  if (!contentLength) {
-    throw createHttpError(400, "Unable to verify image size");
-  }
-
-  if (Number(contentLength) > MAX_IMAGE_SIZE) {
-    throw createHttpError(400, "Image size must be less than 1MB");
-  }
-};
+import { validateImageUrl } from "../../utils/index.js";
 
 export const createStoryController = async (req, res, next) => {
   try {
@@ -46,7 +27,7 @@ export const createStoryController = async (req, res, next) => {
       );
     }
 
-    await checkImageSize(img);
+    await validateImageUrl(img, "Image");
 
     const story = await StoryModel.create({
       img,

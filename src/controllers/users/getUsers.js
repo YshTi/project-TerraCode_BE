@@ -26,7 +26,7 @@ const parsePositiveIntegerQuery = (value, defaultValue, fieldName, maxValue = nu
 export const getUsers = async (req, res, next) => {
   try {
     const page = parsePositiveIntegerQuery(req.query.page, 1, "Page");
-    const limit = parsePositiveIntegerQuery(req.query.limit, 10, "Limit", 100);
+    const limit = parsePositiveIntegerQuery(req.query.limit, 12, "Limit", 100);
 
     const skip = (page - 1) * limit;
     const filter = { articlesAmount: { $gt: 0 } };
