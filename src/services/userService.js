@@ -196,7 +196,6 @@ export const updateCurrentUser = async ({ user, data }) => {
       );
 
       const backendUrl =
-        process.env.BACKEND_URL ||
         process.env.DEPLOYED_SERVER_URL ||
         "http://localhost:3000";
 
