@@ -37,7 +37,7 @@ usersRouter.get("/", getUsers);
 usersRouter.get("/:id", userIdValidation, getUserProfileController);
 
 usersRouter.patch(
-  "me/updateAvatar",
+  "/me/updateAvatar",
   authenticate,
   upload.single("avatar"),
   ctrl.updateAvatar,
