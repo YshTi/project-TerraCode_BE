@@ -98,7 +98,7 @@ export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
 
 export const addStoryToSaved = async ({ userId, storyId }) => {
   if (!mongoose.Types.ObjectId.isValid(storyId)) {
-    throw createError(400, "Invalid story id format");
+    throw createError(404, "Story not found");
   }
 
   const story = await StoryModel.findById(storyId);
@@ -136,7 +136,7 @@ export const addStoryToSaved = async ({ userId, storyId }) => {
 
 export const removeStoryFromSaved = async ({ userId, storyId }) => {
   if (!mongoose.Types.ObjectId.isValid(storyId)) {
-    throw createError(400, "Invalid story id format");
+    throw createError(404, "Story not found");
   }
 
   const story = await StoryModel.findById(storyId);
