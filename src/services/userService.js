@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import { StoryModel, UserModel } from "../models/index.js";
 import { sendEmailVerification, validateImageUrl } from "../utils/index.js";
 
-
 const EMAIL_CHANGE_SECRET =
   process.env.EMAIL_CHANGE_SECRET || "dev-email-change-secret";
 
@@ -98,7 +97,7 @@ export const getSavedStories = async ({ userId, page = 1, limit = 10 }) => {
 
 export const addStoryToSaved = async ({ userId, storyId }) => {
   if (!mongoose.Types.ObjectId.isValid(storyId)) {
-    throw createError(404, "Story not found");
+    throw createError(400, "Invalid storyId");
   }
 
   const story = await StoryModel.findById(storyId);
@@ -136,7 +135,7 @@ export const addStoryToSaved = async ({ userId, storyId }) => {
 
 export const removeStoryFromSaved = async ({ userId, storyId }) => {
   if (!mongoose.Types.ObjectId.isValid(storyId)) {
-    throw createError(404, "Story not found");
+    throw createError(400, "Invalid storyId");
   }
 
   const story = await StoryModel.findById(storyId);
@@ -200,7 +199,10 @@ export const updateCurrentUser = async ({ user, data }) => {
 
     if (newEmail === user.email) {
       if (Object.keys(updates).length === 0) {
-        throw createError(400, "New email must be different from current email");
+        throw createError(
+          400,
+          "New email must be different from current email",
+        );
       }
     } else {
       const existingUser = await UserModel.findOne({ email: newEmail });
@@ -216,8 +218,7 @@ export const updateCurrentUser = async ({ user, data }) => {
       );
 
       const backendUrl =
-        process.env.DEPLOYED_SERVER_URL ||
-        "http://localhost:3000";
+        process.env.DEPLOYED_SERVER_URL || "http://localhost:3000";
 
       const verificationUrl = `${backendUrl.replace(
         /\/$/,
@@ -231,7 +232,8 @@ export const updateCurrentUser = async ({ user, data }) => {
 
       return {
         requiresEmailVerification: true,
-        message: "Verification email sent. Please confirm the new email address.",
+        message:
+          "Verification email sent. Please confirm the new email address.",
         email: newEmail,
       };
     }
