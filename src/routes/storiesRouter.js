@@ -15,6 +15,14 @@ import { deleteStoryImageOnError } from "../middleware/deleteStoryImageOnError.j
 import { getStories } from "../controllers/stories/getStories.js";
 import { storiesQuerySchema } from "../validations/index.js";
 
+import { updateStoryController } from "../controllers/stories/updateStory.js";
+import { deleteStoryController } from "../controllers/stories/deleteStory.js";
+
+import {
+  storyIdParamsValidation,
+  updateStoryValidation,
+} from "../validations/manageStoryValidations.js";
+
 const storiesRouter = Router();
 
 const setStoryDate = (req, res, next) => {
@@ -33,8 +41,6 @@ storiesRouter.get(
 
 storiesRouter.get("/", celebrate(storiesQuerySchema), getStories);
 
-storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
-
 storiesRouter.post(
   "/",
   authenticate,
@@ -44,6 +50,23 @@ storiesRouter.post(
   createStoryValidation,
   usersController.createStoryController,
   deleteStoryImageOnError,
+);
+
+storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
+
+storiesRouter.patch(
+  "/:storyId",
+  authenticate,
+  storyIdParamsValidation,
+  updateStoryValidation,
+  updateStoryController,
+);
+
+storiesRouter.delete(
+  "/:storyId",
+  authenticate,
+  storyIdParamsValidation,
+  deleteStoryController,
 );
 
 export default storiesRouter;

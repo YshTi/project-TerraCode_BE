@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 
 import { StoryModel } from "../../models/story.js";
 import { CategoryModel } from "../../models/category.js";
+import { UserModel } from "../../models/user.js";
 import { validateImageUrl } from "../../utils/index.js";
 import { deleteImageFromCloudinary } from "../../utils/uploadBufferToCloudinary.js";
 
@@ -43,6 +44,12 @@ export const createStoryController = async (req, res, next) => {
     if (!story) {
       throw createHttpError(400, "Failed to create story");
     }
+
+    await UserModel.findByIdAndUpdate(ownerId, {
+      $inc: {
+        articlesAmount: 1,
+      },
+    });
 
     req.storyImagePublicId = null;
 

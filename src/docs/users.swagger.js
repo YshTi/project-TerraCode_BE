@@ -460,6 +460,132 @@
 
 /**
  * @swagger
+ * /api/users/me/password:
+ *   patch:
+ *     summary: Change current user's password
+ *     description: >
+ *       Private endpoint for changing the password of the currently
+ *       authenticated user.
+ *
+ *       The current password must be correct.
+ *       The new password must contain between 8 and 128 characters,
+ *       must contain at least one special character, and must not
+ *       contain whitespace.
+ *
+ *       confirmNewPassword must exactly match newPassword.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             additionalProperties: false
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *               - confirmNewPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Current user password.
+ *                 example: "OldPassword!"
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 maxLength: 128
+ *                 description: >
+ *                   New password. Must contain at least one special character
+ *                   and must not contain whitespace.
+ *                 example: "NewPassword!"
+ *               confirmNewPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Must exactly match newPassword.
+ *                 example: "NewPassword!"
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Password updated successfully"
+ *       400:
+ *         description: Invalid request body or incorrect current password
+ *         content:
+ *           application/json:
+ *             examples:
+ *               incorrectCurrentPassword:
+ *                 summary: Current password is incorrect
+ *                 value:
+ *                   message: "Current password is incorrect"
+ *               missingCurrentPassword:
+ *                 summary: Current password is missing
+ *                 value:
+ *                   message: "Current password is required"
+ *               missingNewPassword:
+ *                 summary: New password is missing
+ *                 value:
+ *                   message: "New password is required"
+ *               missingConfirmation:
+ *                 summary: Password confirmation is missing
+ *                 value:
+ *                   message: "Password confirmation is required"
+ *               passwordTooShort:
+ *                 summary: New password is shorter than 8 characters
+ *                 value:
+ *                   message: "New password must be at least 8 characters"
+ *               passwordTooLong:
+ *                 summary: New password is longer than 128 characters
+ *                 value:
+ *                   message: "New password must be at most 128 characters"
+ *               passwordContainsWhitespace:
+ *                 summary: New password contains whitespace
+ *                 value:
+ *                   message: "New password must not contain whitespace characters"
+ *               missingSpecialCharacter:
+ *                 summary: New password has no special character
+ *                 value:
+ *                   message: "New password must contain at least one special character"
+ *               passwordsDoNotMatch:
+ *                 summary: Password confirmation does not match
+ *                 value:
+ *                   message: "Passwords must match"
+ *               unknownField:
+ *                 summary: Unknown field is provided
+ *                 value:
+ *                   message: "\"unexpected\" is not allowed"
+ *               userHasNoPassword:
+ *                 summary: User account has no password
+ *                 value:
+ *                   message: "User does not have a password"
+ *       401:
+ *         description: Bearer token is missing, invalid, or expired
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Not authorized"
+ *       404:
+ *         description: Authenticated user no longer exists
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+/**
+ * @swagger
  * /api/users/me/verify-email:
  *   get:
  *     summary: Verify email change

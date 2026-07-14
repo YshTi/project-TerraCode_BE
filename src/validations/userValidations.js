@@ -44,7 +44,10 @@ export const updateCurrentUserValidation = celebrate({
     }),
   })
     .min(1)
-    .unknown(false),
+    .unknown(false)
+    .messages({
+      "object.min": "No valid fields provided",
+    }),
 });
 
 export const verifyEmailChangeValidation = celebrate({
