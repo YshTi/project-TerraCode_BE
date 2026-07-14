@@ -122,29 +122,50 @@
  * /api/auth/refresh:
  *   post:
  *     summary: Refresh access token
- *     description: >
+ *     description: |
  *       Creates a new access token using the refreshToken stored in an HTTP-only cookie.
- *       The request body is not required. The refreshToken cookie is set during login
- *       and should be sent automatically by the browser or Postman.
  *
- *       QA flow:
- *       1. Login with POST /api/auth/login.
- *       2. Confirm that the response sets a refreshToken cookie.
- *       3. Execute POST /api/auth/refresh without a request body.
- *       4. Use the returned accessToken to authorize private endpoints.
+ *       No request body or manually entered token is required.
+ *
+ *       Swagger UI testing steps:
+ *
+ *       1. Open `POST /api/auth/login`.
+ *       2. Click **Try it out**.
+ *       3. Enter valid user credentials.
+ *       4. Click **Execute**.
+ *       5. Confirm that login returns status `200` and an `accessToken`.
+ *       6. Open browser DevTools.
+ *       7. Go to **Application → Cookies → current backend domain**.
+ *       8. Confirm that the `refreshToken` cookie exists.
+ *       9. Return to Swagger UI.
+ *       10. Open `POST /api/auth/refresh`.
+ *       11. Click **Try it out**.
+ *       12. Click **Execute** without entering a body or token.
+ *       13. Swagger sends the stored refreshToken cookie automatically.
+ *       14. Confirm that the response returns status `200` and a new `accessToken`.
+ *
+ *       Missing-cookie test:
+ *
+ *       1. Delete the `refreshToken` cookie in browser DevTools.
+ *       2. Execute `POST /api/auth/refresh` again.
+ *       3. Expected response: `401` with `"Refresh token missing"`.
+ *
+ *       Invalid-cookie test:
+ *
+ *       1. Edit the real `refreshToken` cookie value in browser DevTools.
+ *       2. Replace its value with an invalid value such as `abc`.
+ *       3. Execute `POST /api/auth/refresh`.
+ *       4. Expected response: `401` with `"Invalid refresh token"`.
+ *       5. Log in again after this test to restore a valid refresh token.
+ *
+ *       Expired-cookie test:
+ *
+ *       1. Use a refresh token configured with a short expiry in the test environment.
+ *       2. Log in and wait until that token expires.
+ *       3. Execute `POST /api/auth/refresh`.
+ *       4. Expected response: `401` with `"Refresh token expired"`.
  *     tags:
  *       - Auth
- *     parameters:
- *       - in: cookie
- *         name: refreshToken
- *         required: true
- *         description: >
- *           Refresh token stored as an HTTP-only cookie after successful login.
- *           In Swagger UI or Postman, this cookie is usually sent automatically
- *           after login if cookies are enabled.
- *         schema:
- *           type: string
- *         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *     responses:
  *       200:
  *         description: Access token refreshed successfully
@@ -152,17 +173,24 @@
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - accessToken
  *               properties:
  *                 accessToken:
  *                   type: string
- *                   description: New access token. Use it as Bearer token for protected endpoints.
+ *                   description: New access token for protected endpoints
  *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *             example:
- *               accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *       401:
  *         description: Refresh token is missing, invalid, or expired
  *         content:
  *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
  *             examples:
  *               refreshTokenMissing:
  *                 summary: Refresh token cookie is missing
@@ -176,14 +204,17 @@
  *                 summary: Refresh token is expired
  *                 value:
  *                   message: "Refresh token expired"
- *               notAuthorized:
- *                 summary: User is not authorized
- *                 value:
- *                   message: "Not authorized"
  *       500:
- *         description: Server error
+ *         description: Internal server error
  *         content:
  *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
  *             example:
  *               message: "Internal Server Error"
  */
