@@ -99,7 +99,6 @@ export const loginUser = async ({ email, password }) => {
 };
 
 export const refreshUserToken = async (refreshToken) => {
-
   if (!refreshToken) {
     throw createError(401, "Refresh token missing");
   }
@@ -107,28 +106,36 @@ export const refreshUserToken = async (refreshToken) => {
   let payload;
 
   try {
-
     payload = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
     );
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw createError(401, "Refresh token expired");
+    }
 
-  } catch {
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw createError(401, "Invalid refresh token");
+    }
 
-    throw createError(401, "Refresh token expired");
+    throw createError(401, "Invalid refresh token");
   }
 
   const user = await UserModel.findById(payload.id);
 
   if (!user) {
-    throw createError(401);
+    throw createError(401, "Invalid refresh token");
   }
 
   if (user.refreshToken !== refreshToken) {
     throw createError(401, "Invalid refresh token");
   }
 
-  if (user.refreshTokenExpiresAt < new Date()) {
+  if (
+    !user.refreshTokenExpiresAt ||
+    user.refreshTokenExpiresAt < new Date()
+  ) {
     throw createError(401, "Refresh token expired");
   }
 
