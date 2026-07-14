@@ -319,7 +319,7 @@ export const changeCurrentUserPassword = async ({
   );
 
   if (!isCurrentPasswordValid) {
-    throw createError(401, "Current password is incorrect");
+    throw createError(400, "Current password is incorrect");
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
