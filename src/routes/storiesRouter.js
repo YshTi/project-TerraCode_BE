@@ -10,10 +10,19 @@ import { getStoryById } from "../controllers/stories/getStoryById.js";
 import { usersController } from "../controllers/index.js";
 import { createStoryValidation } from "../validations/index.js";
 import { authenticate } from "../middleware/authenticate.js";
+import { uploadStoryImage, setStoryImageUrl } from "../middleware/uploadStoryImage.js";
 import { getStories } from "../controllers/stories/getStories.js";
 import { storiesQuerySchema } from "../validations/index.js";
 
 const storiesRouter = Router();
+
+const setStoryDate = (req, res, next) => {
+  if (!req.body.date) {
+    req.body.date = new Date().toISOString().slice(0, 10);
+  }
+
+  next();
+};
 
 storiesRouter.get(
   "/recommended",
@@ -25,12 +34,14 @@ storiesRouter.get("/", celebrate(storiesQuerySchema), getStories);
 
 storiesRouter.get("/:storyId", celebrate(storyIdSchema), getStoryById);
 
-storiesRouter.post("/", authenticate, createStoryValidation, usersController.createStoryController);
-
-
-
+storiesRouter.post(
+  "/",
+  authenticate,
+  uploadStoryImage,
+  setStoryImageUrl,
+  setStoryDate,
+  createStoryValidation,
+  usersController.createStoryController,
+);
 
 export default storiesRouter;
-
-
-

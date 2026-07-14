@@ -31,6 +31,7 @@ app.use(helmet());
 app.use(cookieParser());
 
 
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api-docs-assets", express.static(path.join(__dirname, "docs")));
 
 app.use(
