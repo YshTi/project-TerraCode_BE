@@ -11,6 +11,7 @@ import { usersController } from "../controllers/index.js";
 import { createStoryValidation } from "../validations/index.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { uploadStoryImage, setStoryImageUrl } from "../middleware/uploadStoryImage.js";
+import { deleteStoryImageOnError } from "../middleware/deleteStoryImageOnError.js";
 import { getStories } from "../controllers/stories/getStories.js";
 import { storiesQuerySchema } from "../validations/index.js";
 
@@ -42,6 +43,7 @@ storiesRouter.post(
   setStoryDate,
   createStoryValidation,
   usersController.createStoryController,
+  deleteStoryImageOnError,
 );
 
 export default storiesRouter;

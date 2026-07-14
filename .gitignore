@@ -146,4 +146,5 @@ vite.config.ts.timestamp-*
 pullrequests-list.txt
 
 # idea files
-.ideauploads/
+.idea
+uploads/

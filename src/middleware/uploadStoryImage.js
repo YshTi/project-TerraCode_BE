@@ -1,35 +1,29 @@
-import fs from "node:fs";
-import path from "node:path";
-import { randomUUID } from "node:crypto";
-
 import createHttpError from "http-errors";
 import multer from "multer";
 
-const uploadDir = path.join(process.cwd(), "uploads", "stories");
+import { uploadBufferToCloudinary } from "../utils/uploadBufferToCloudinary.js";
 
-fs.mkdirSync(uploadDir, { recursive: true });
-
-const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-
-  filename: (req, file, cb) => {
-    const extension = path.extname(file.originalname).toLowerCase();
-    cb(null, `${Date.now()}-${randomUUID()}${extension}`);
-  },
-});
+const allowedImageTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
+
   limits: {
-    fileSize: 10 * 1024 * 1024,
+    fileSize: 1 * 1024 * 1024,
   },
+
   fileFilter: (req, file, cb) => {
     if (!allowedImageTypes.includes(file.mimetype)) {
-      cb(createHttpError(400, "Image must be JPG, PNG or WEBP"));
+      cb(
+        createHttpError(
+          400,
+          "Image must be JPG, PNG or WEBP",
+        ),
+      );
       return;
     }
 
@@ -37,11 +31,20 @@ const upload = multer({
   },
 });
 
-export const uploadStoryImage = (req, res, next) => {
+export const uploadStoryImage = (
+  req,
+  res,
+  next,
+) => {
   upload.single("img")(req, res, (error) => {
     if (error instanceof multer.MulterError) {
       if (error.code === "LIMIT_FILE_SIZE") {
-        next(createHttpError(400, "Image size must be less than 10MB"));
+        next(
+          createHttpError(
+            400,
+            "Image size must be less than 1MB",
+          ),
+        );
         return;
       }
 
@@ -58,10 +61,44 @@ export const uploadStoryImage = (req, res, next) => {
   });
 };
 
-export const setStoryImageUrl = (req, res, next) => {
-  if (req.file) {
-    req.body.img = `${req.protocol}://${req.get("host")}/uploads/stories/${req.file.filename}`;
-  }
+export const setStoryImageUrl = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    if (!req.file) {
+      next();
+      return;
+    }
 
-  next();
+    const result = await uploadBufferToCloudinary(
+      req.file.buffer,
+      {
+        folder: "terracode/stories",
+        use_filename: true,
+        unique_filename: true,
+        overwrite: false,
+      },
+    );
+
+    if (!result?.secure_url) {
+      throw createHttpError(
+        500,
+        "Failed to upload story image",
+      );
+    }
+
+    req.body.img = result.secure_url;
+    req.storyImagePublicId = result.public_id;
+
+    next();
+  } catch (error) {
+    next(
+      createHttpError(
+        500,
+        error.message || "Failed to upload story image",
+      ),
+    );
+  }
 };

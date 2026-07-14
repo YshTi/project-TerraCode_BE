@@ -1,7 +1,9 @@
 import createHttpError from "http-errors";
+
 import { StoryModel } from "../../models/story.js";
 import { CategoryModel } from "../../models/category.js";
 import { validateImageUrl } from "../../utils/index.js";
+import { deleteImageFromCloudinary } from "../../utils/uploadBufferToCloudinary.js";
 
 export const createStoryController = async (req, res, next) => {
   try {
@@ -23,7 +25,7 @@ export const createStoryController = async (req, res, next) => {
     if (existingStory) {
       throw createHttpError(
         409,
-        "You have already created a story with this title and text"
+        "You have already created a story with this title and text",
       );
     }
 
@@ -42,12 +44,25 @@ export const createStoryController = async (req, res, next) => {
       throw createHttpError(400, "Failed to create story");
     }
 
+    req.storyImagePublicId = null;
+
     res.status(201).json({
       status: 201,
       message: "Story created successfully",
       data: story,
     });
   } catch (error) {
+    if (req.storyImagePublicId) {
+      try {
+        await deleteImageFromCloudinary(req.storyImagePublicId);
+      } catch (cleanupError) {
+        console.error(
+          "Failed to delete Cloudinary image after story creation error:",
+          cleanupError,
+        );
+      }
+    }
+
     next(error);
   }
 };
