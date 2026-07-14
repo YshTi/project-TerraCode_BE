@@ -12,6 +12,7 @@ import {
   getSavedStories,
   updateCurrentUser,
   verifyEmailChange,
+  changeCurrentUserPassword,
 } from "./userService.js";
 
 export const authService = {
@@ -28,4 +29,5 @@ export const userService = {
   getSavedStories,
   updateCurrentUser,
   verifyEmailChange,
+  changeCurrentUserPassword,
 };

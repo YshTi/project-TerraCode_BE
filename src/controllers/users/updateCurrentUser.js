@@ -27,3 +27,17 @@ export const verifyEmailChange = async (req, res, next) => {
     next(error);
   }
 };
+
+export const changeCurrentUserPassword = async (req, res, next) => {
+  try {
+    const result = await userService.changeCurrentUserPassword({
+      user: req.user,
+      currentPassword: req.body.currentPassword,
+      newPassword: req.body.newPassword,
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
