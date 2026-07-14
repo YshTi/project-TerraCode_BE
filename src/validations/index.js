@@ -8,6 +8,7 @@ export {
   userIdValidation,
   updateCurrentUserValidation,
   verifyEmailChangeValidation,
+  changeCurrentUserPasswordValidation,
 } from "./userValidations.js";
 
 export {

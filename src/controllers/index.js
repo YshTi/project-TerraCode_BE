@@ -10,7 +10,11 @@ import { getCurrentUser } from "./users/getCurrentUser.js";
 import { getCurrentUserStories } from "./users/getCurrentUserStories.js";
 import { getSavedStoriesController } from "./users/getSavedStories.js";
 import { addSavedStory, removeSavedStory } from "./users/savedStories.js";
-import { updateCurrentUser, verifyEmailChange } from "./users/updateCurrentUser.js";
+import {
+  updateCurrentUser,
+  verifyEmailChange,
+  changeCurrentUserPassword,
+} from "./users/updateCurrentUser.js";
 import { createStoryController } from "./stories/createStoryController.js";
 import { getUserProfileController } from "./users/getUserProfileControllers.js";
 import { updateAvatar } from "./users/updateAvatar.js";
@@ -38,4 +42,5 @@ export const usersController = {
   verifyEmailChange,
   createStoryController,
   updateAvatar,
+  changeCurrentUserPassword,
 };

@@ -8,7 +8,8 @@ import {
   getCurrentUserStoriesValidation,
   updateCurrentUserValidation,
   verifyEmailChangeValidation,
-  userIdValidation
+  userIdValidation, 
+  changeCurrentUserPasswordValidation,
 } from "../validations/index.js";
 import { getUsers } from "../controllers/users/getUsers.js";
 
@@ -21,6 +22,13 @@ usersRouter.patch(
   authenticate,
   updateCurrentUserValidation,
   ctrl.updateCurrentUser,
+);
+
+usersRouter.patch(
+  "/me/password",
+  authenticate,
+  changeCurrentUserPasswordValidation,
+  ctrl.changeCurrentUserPassword,
 );
 
 usersRouter.get(

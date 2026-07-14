@@ -1,9 +1,12 @@
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import mongoose from "mongoose";
 
 import { StoryModel, UserModel } from "../models/index.js";
 import { sendEmailVerification, validateImageUrl } from "../utils/index.js";
+
+const SALT_ROUNDS = 10;
 
 const EMAIL_CHANGE_SECRET =
   process.env.EMAIL_CHANGE_SECRET || "dev-email-change-secret";
@@ -292,5 +295,40 @@ export const verifyEmailChange = async ({ token }) => {
   return {
     message: "Email was updated successfully",
     user: formatUserResponse(updatedUser),
+  };
+};
+
+export const changeCurrentUserPassword = async ({
+  user,
+  currentPassword,
+  newPassword,
+}) => {
+  const currentUser = await UserModel.findById(user._id);
+
+  if (!currentUser) {
+    throw createError(404, "User not found");
+  }
+
+  if (!currentUser.password) {
+    throw createError(400, "User does not have a password");
+  }
+
+  const isCurrentPasswordValid = await bcrypt.compare(
+    currentPassword,
+    currentUser.password,
+  );
+
+  if (!isCurrentPasswordValid) {
+    throw createError(401, "Current password is incorrect");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+  await UserModel.findByIdAndUpdate(user._id, {
+    password: hashedPassword,
+  });
+
+  return {
+    message: "Password updated successfully",
   };
 };
