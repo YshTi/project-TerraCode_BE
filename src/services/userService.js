@@ -220,13 +220,14 @@ export const updateCurrentUser = async ({ user, data }) => {
         { expiresIn: "1h" },
       );
 
-      const backendUrl =
-        process.env.DEPLOYED_SERVER_URL || "http://localhost:3000";
+      const frontendUrl =
+        process.env.FRONTEND_URL ||
+        "http://localhost:3001";
 
-      const verificationUrl = `${backendUrl.replace(
+      const verificationUrl = `${frontendUrl.replace(
         /\/$/,
         "",
-      )}/api/users/me/verify-email?token=${encodeURIComponent(token)}`;
+      )}/profile/verify-email?token=${encodeURIComponent(token)}`;
 
       await sendEmailVerification({
         to: newEmail,
